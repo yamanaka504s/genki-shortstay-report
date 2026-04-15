@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>元気の家ショートステイ 報告書作成</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Yu Gothic UI", "Meiryo", sans-serif; background: #eef1f5; color: #333; }
+
+  /* ===== レイアウト ===== */
+  .app { display: grid; grid-template-columns: 320px 1fr; min-height: 100vh; }
+  .panel { background: #fff; border-right: 1px solid #ddd; padding: 16px; overflow-y: auto; max-height: 100vh; }
+  .stage { padding: 24px; display: flex; justify-content: center; align-items: flex-start; }
+
+  /* ===== サイドパネル ===== */
+  h1 { font-size: 16px; margin-bottom: 12px; color: #2a5d8f; }
+  h2 { font-size: 13px; margin: 14px 0 6px; color: #555; border-left: 4px solid #2a5d8f; padding-left: 6px; }
+  .group { margin-bottom: 14px; }
+  button, .btn {
+    background: #2a5d8f; color: #fff; border: none; padding: 8px 12px;
+    border-radius: 6px; cursor: pointer; font-size: 12px; margin: 2px;
+    transition: background .15s;
+  }
+  button:hover { background: #3b7ab8; }
+  button.sub { background: #ddd; color: #333; }
+  button.sub:hover { background: #ccc; }
+  button.warn { background: #c0392b; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { padding: 6px 10px; background: #f0f3f7; border: 1px solid #d0d7e0; border-radius: 14px; cursor: pointer; font-size: 12px; }
+  .chip.active { background: #2a5d8f; color: #fff; border-color: #2a5d8f; }
+  textarea, input[type="text"] {
+    width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px;
+    font-family: inherit; font-size: 12px; resize: vertical;
+  }
+  textarea { min-height: 60px; }
+  label { font-size: 11px; color: #666; display: block; margin-bottom: 2px; }
+  .file-input { display: none; }
+  .file-label {
+    display: inline-block; background: #27ae60; color: #fff;
+    padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 12px;
+  }
+  .file-label:hover { background: #2ecc71; }
+  .hint { font-size: 11px; color: #888; margin-top: 4px; }
+
+  /* ===== A4用紙 ===== */
+  .page {
+    width: 210mm; min-height: 297mm; background: #fff;
+    box-shadow: 0 4px 18px rgba(0,0,0,.15);
+    padding: 12mm; position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 10px; }
+  .title-area .main-title { font-size: 22px; font-weight: bold; }
+  .title-area .sub-title { font-size: 12px; opacity: .7; }
+  .meta { text-align: right; font-size: 11px; line-height: 1.7; }
+
+  /* ===== 写真エリア ===== */
+  .photo-area { flex: 1.2; display: grid; gap: 6px; position: relative; min-height: 130mm; }
+  .photo-cell {
+    position: relative; overflow: hidden; background: #f5f5f5;
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+  }
+  .photo-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo-cell .placeholder { color: #aaa; font-size: 14px; text-align: center; padding: 16px; }
+
+  /* レイアウト: 3枚 */
+  .layout-3a { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
+  .layout-3a .photo-cell:nth-child(1) { grid-row: span 2; }
+  .layout-3b { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr; }
+  .layout-3c { grid-template-columns: 1fr 1fr; grid-template-rows: 2fr 1fr; }
+  .layout-3c .photo-cell:nth-child(1) { grid-column: span 2; }
+
+  /* レイアウト: 4枚 */
+  .layout-4a { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .layout-4b { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr 1fr; }
+  .layout-4b .photo-cell:nth-child(1) { grid-row: span 3; }
+  .layout-4c { grid-template-columns: 1fr 2fr 1fr; grid-template-rows: 1fr 1fr; }
+  .layout-4c .photo-cell:nth-child(2) { grid-row: span 2; }
+
+  /* ===== テロップ ===== */
+  .telop {
+    position: absolute; padding: 6px 14px; font-size: 13px; font-weight: bold;
+    cursor: move; user-select: none; white-space: nowrap; z-index: 5;
+    transition: transform .1s;
+  }
+  .telop:hover { transform: scale(1.05); }
+  .telop .del { position: absolute; top: -8px; right: -8px; background: #e74c3c; color: #fff;
+    width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: none;
+    align-items: center; justify-content: center; cursor: pointer; border: none;
+  }
+  .telop:hover .del { display: flex; }
+
+  .tel-bubble { background: #fff; border: 2px solid #2a5d8f; border-radius: 16px; color: #2a5d8f; }
+  .tel-bubble::after {
+    content: ''; position: absolute; bottom: -8px; left: 20px;
+    border: 8px solid transparent; border-top-color: #2a5d8f; border-bottom: 0;
+  }
+  .tel-ribbon { background: #e74c3c; color: #fff; transform: skewX(-8deg); padding: 6px 18px; }
+  .tel-ribbon span { display: inline-block; transform: skewX(8deg); }
+  .tel-sticky { background: #fff9a8; color: #5a4500; transform: rotate(-3deg);
+    box-shadow: 2px 3px 6px rgba(0,0,0,.18); border-radius: 2px; }
+  .tel-stamp { background: transparent; color: #c0392b; border: 3px double #c0392b;
+    border-radius: 50%; padding: 10px 16px; transform: rotate(-12deg); font-family: serif; }
+  .tel-highlight { background: linear-gradient(transparent 55%, #ffe066 55%); color: #333; padding: 2px 6px; }
+  .tel-handwrite { background: transparent; color: #2c3e50; font-family: "Yu Gothic", serif;
+    font-style: italic; border-bottom: 2px solid #2c3e50; border-radius: 0; padding: 4px 8px; }
+  .tel-badge { background: #f39c12; color: #fff; border-radius: 4px;
+    box-shadow: 0 3px 0 #c87f00; padding: 6px 14px; }
+  .tel-cloud { background: #fff; color: #555; border-radius: 30px;
+    box-shadow: 0 0 0 6px #fff, 0 0 0 8px #ddd; border: 2px solid #ddd; padding: 8px 16px; }
+
+  /* ===== コメント ===== */
+  .comment-area {
+    margin-top: 8px; padding: 12px 16px; border-radius: 8px;
+    font-size: 13px; line-height: 1.7; min-height: 60px;
+  }
+
+  /* ===== フッター ===== */
+  .footer { margin-top: 8px; padding-top: 6px; font-size: 10px; opacity: .7;
+    border-top: 1px dashed #ccc; display: flex; justify-content: space-between; }
+
+  /* ===== テーマ ===== */
+  /* 春 */
+  .theme-spring { background: linear-gradient(135deg, #fff5f8 0%, #fff 50%); }
+  .theme-spring .header { border-bottom: 3px solid #f8a5c2; }
+  .theme-spring .title-area .main-title { color: #c2185b; }
+  .theme-spring .comment-area { background: #fde8ef; border-left: 5px solid #f06292; color: #6a1b3a; }
+  .theme-spring::before { content: '🌸'; position: absolute; top: 4mm; right: 6mm; font-size: 28px; opacity: .4; }
+
+  /* 夏 */
+  .theme-summer { background: linear-gradient(135deg, #e3f5fc 0%, #fff 50%); }
+  .theme-summer .header { border-bottom: 3px solid #4fc3f7; }
+  .theme-summer .title-area .main-title { color: #0277bd; }
+  .theme-summer .comment-area { background: #e1f5fe; border-left: 5px solid #29b6f6; color: #01579b; }
+  .theme-summer::before { content: '🌻'; position: absolute; top: 4mm; right: 6mm; font-size: 28px; opacity: .5; }
+
+  /* 秋 */
+  .theme-autumn { background: linear-gradient(135deg, #fff3e0 0%, #fff 50%); }
+  .theme-autumn .header { border-bottom: 3px solid #ff9800; }
+  .theme-autumn .title-area .main-title { color: #bf360c; }
+  .theme-autumn .comment-area { background: #ffe0b2; border-left: 5px solid #fb8c00; color: #5d2c00; }
+  .theme-autumn::before { content: '🍁'; position: absolute; top: 4mm; right: 6mm; font-size: 28px; opacity: .5; }
+
+  /* 冬 */
+  .theme-winter { background: linear-gradient(135deg, #eef5fa 0%, #fff 50%); }
+  .theme-winter .header { border-bottom: 3px solid #90a4ae; }
+  .theme-winter .title-area .main-title { color: #37474f; }
+  .theme-winter .comment-area { background: #eceff1; border-left: 5px solid #607d8b; color: #263238; }
+  .theme-winter::before { content: '❄️'; position: absolute; top: 4mm; right: 6mm; font-size: 28px; opacity: .5; }
+
+  /* シンプル */
+  .theme-simple { background: #fff; }
+  .theme-simple .header { border-bottom: 2px solid #333; }
+  .theme-simple .title-area .main-title { color: #222; }
+  .theme-simple .comment-area { background: #f7f7f7; border-left: 5px solid #555; }
+
+  /* モダン */
+  .theme-modern { background: #fafafa; }
+  .theme-modern .header { border-bottom: 4px double #444; }
+  .theme-modern .title-area .main-title { color: #111; letter-spacing: 2px; }
+  .theme-modern .comment-area { background: #fff; border: 2px solid #333; color: #222; }
+
+  /* ぬくもり */
+  .theme-warm { background: linear-gradient(135deg, #fdf6ec 0%, #fff 60%); }
+  .theme-warm .header { border-bottom: 3px solid #d4a574; }
+  .theme-warm .title-area .main-title { color: #8b5a2b; }
+  .theme-warm .comment-area { background: #f5e6d3; border-left: 5px solid #c08552; color: #5d3a1a; }
+  .theme-warm::before { content: '☕'; position: absolute; top: 4mm; right: 6mm; font-size: 26px; opacity: .4; }
+
+  /* ポップ */
+  .theme-pop { background: linear-gradient(135deg, #fff9c4 0%, #fff 40%, #f8bbd0 100%); }
+  .theme-pop .header { border-bottom: 4px dashed #ec407a; }
+  .theme-pop .title-area .main-title { color: #ad1457; }
+  .theme-pop .comment-area { background: #fff; border: 3px dashed #ff80ab; border-radius: 16px; color: #4a148c; }
+  .theme-pop::before { content: '🎈'; position: absolute; top: 4mm; right: 6mm; font-size: 28px; }
+
+  /* ===== 印刷 ===== */
+  @media print {
+    body { background: #fff; }
+    .panel { display: none; }
+    .app { grid-template-columns: 1fr; }
+    .stage { padding: 0; }
+    .page { box-shadow: none; width: 210mm; min-height: 297mm; }
+    .telop .del { display: none !important; }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ====== 操作パネル ====== -->
+  <aside class="panel">
+    <h1>🏠 ショートステイ報告書</h1>
+
+    <div class="group">
+      <h2>① 写真選択（3〜4枚）</h2>
+      <label class="file-label">
+        📷 写真を選ぶ
+        <input type="file" class="file-input" id="photoInput" accept="image/*" multiple>
+      </label>
+      <div class="hint">最大4枚まで。順序はクリックで入替できます</div>
+    </div>
+
+    <div class="group">
+      <h2>② 写真レイアウト</h2>
+      <div class="chips" id="layoutChips"></div>
+    </div>
+
+    <div class="group">
+      <h2>③ デザインテーマ</h2>
+      <div class="chips" id="themeChips"></div>
+    </div>
+
+    <div class="group">
+      <h2>④ テロップ追加</h2>
+      <input type="text" id="telopText" placeholder="テロップ文字（例: 笑顔いっぱい！）">
+      <div style="margin-top:6px;">
+        <button onclick="addTelop()">✨ ランダムで追加</button>
+        <button class="sub" onclick="clearTelops()">クリア</button>
+      </div>
+      <div class="hint">追加後、テロップをドラッグで移動可能</div>
+    </div>
+
+    <div class="group">
+      <h2>⑤ コメント</h2>
+      <textarea id="commentText" placeholder="2〜3行のコメントを入力"></textarea>
+      <div style="margin-top:6px;">
+        <label>シーン</label>
+        <select id="aiScene" style="width:100%;padding:4px;font-size:12px;">
+          <option value="general">通常の利用</option>
+          <option value="meal">食事・おやつ</option>
+          <option value="bath">入浴</option>
+          <option value="recreation">レクリエーション</option>
+          <option value="walk">散歩・外出</option>
+          <option value="craft">手芸・工作</option>
+          <option value="conversation">会話・交流</option>
+        </select>
+        <button onclick="generateAI()" style="margin-top:6px;width:100%;">🤖 AIでコメント生成</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>⑥ 基本情報</h2>
+      <label>利用開始日</label>
+      <input type="date" id="startDate">
+      <label style="margin-top:4px;">利用終了日（単日の場合は空欄）</label>
+      <input type="date" id="endDate">
+      <label style="margin-top:4px;">担当スタッフ</label>
+      <input type="text" id="staffName" placeholder="例: 山田">
+    </div>
+
+    <div class="group">
+      <h2>⑦ 出力</h2>
+      <button onclick="window.print()" style="width:100%;">🖨️ 印刷 / PDF保存</button>
+    </div>
+  </aside>
+
+  <!-- ====== A4プレビュー ====== -->
+  <main class="stage">
+    <div class="page theme-spring" id="page">
+      <div class="header">
+        <div class="title-area">
+          <div class="main-title">ショートステイご利用報告</div>
+          <div class="sub-title">元気の家ショートステイ</div>
+        </div>
+        <div class="meta">
+          <div>利用日: <span id="metaDate">　　　　</span></div>
+          <div>担当: <span id="metaStaff">　　　</span></div>
+        </div>
+      </div>
+
+      <div class="photo-area layout-4a" id="photoArea"></div>
+
+      <div class="comment-area" id="commentArea">
+        ご利用中の様子をこちらに記載します。AIボタンで自動生成も可能です。
+      </div>
+
+      <div class="footer">
+        <span>元気の家ショートステイ</span>
+        <span>※プライバシー保護のためお名前は記載しておりません</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ===== データ =====
+const layouts = {
+  3: [
+    { id: 'layout-3a', name: '3枚｜大1+小2' },
+    { id: 'layout-3b', name: '3枚｜横並び' },
+    { id: 'layout-3c', name: '3枚｜上大+下2' }
+  ],
+  4: [
+    { id: 'layout-4a', name: '4枚｜2×2' },
+    { id: 'layout-4b', name: '4枚｜大1+小3' },
+    { id: 'layout-4c', name: '4枚｜中央大' }
+  ]
+};
+
+const themes = [
+  { id: 'theme-spring', name: '🌸 春' },
+  { id: 'theme-summer', name: '🌻 夏' },
+  { id: 'theme-autumn', name: '🍁 秋' },
+  { id: 'theme-winter', name: '❄️ 冬' },
+  { id: 'theme-simple', name: '⬜ シンプル' },
+  { id: 'theme-modern', name: '◼️ モダン' },
+  { id: 'theme-warm', name: '☕ ぬくもり' },
+  { id: 'theme-pop', name: '🎈 ポップ' }
+];
+
+const telopStyles = ['tel-bubble','tel-ribbon','tel-sticky','tel-stamp','tel-highlight','tel-handwrite','tel-badge','tel-cloud'];
+
+const telopSamples = ['いい笑顔！','楽しい時間','大好評！','ほっこり','元気いっぱい','癒しのひととき','素敵な瞬間','みんなで♪','心温まる','和やかに'];
+
+// ===== AIコメントテンプレート =====
+const aiTemplates = {
+  general: [
+    ['本日も穏やかにお過ごしいただきました。', '他のご利用者様とも楽しそうに過ごされ、終始笑顔が見られました。', 'ゆったりとした時間を満喫されていました。'],
+    ['朝から表情も明るく、', '職員やご利用者様との会話を楽しまれていました。', 'リラックスした様子でお過ごしです。'],
+    ['ご利用中はとても穏やかに、', 'ご自身のペースでゆっくりと過ごされました。', '安心してお休みいただけたご様子です。']
+  ],
+  meal: [
+    ['食事の時間はとても楽しみにされており、', '「美味しいね」と笑顔でお召し上がりになりました。', '完食され、満足されたご様子でした。'],
+    ['本日のお食事も大変好評で、', '会話を楽しみながら美味しそうに召し上がっていました。', 'おやつの時間も楽しまれました。'],
+    ['食欲も旺盛で、', '一口ごとに「おいしい」と感想をいただきました。', '職員も嬉しい時間となりました。']
+  ],
+  bath: [
+    ['入浴では「気持ちいいね」と、', 'リラックスした表情を見せてくださいました。', '湯上がりも肌つやよく、すっきりされたご様子です。'],
+    ['ゆったりと入浴を楽しまれ、', '「あったまったわ」と満足げな笑顔。', '安心してお過ごしいただけました。']
+  ],
+  recreation: [
+    ['本日のレクリエーションでは、', '皆さまと一緒に大いに盛り上がりました。', '笑い声が絶えない楽しい時間となりました。'],
+    ['ゲームに参加され、', '集中して取り組まれる姿が印象的でした。', '達成感のある表情を見せてくださいました。'],
+    ['歌や体操に積極的に参加され、', '懐かしい歌に合わせて口ずさまれていました。', 'とても活気のある時間となりました。']
+  ],
+  walk: [
+    ['天気も良く、', '外の空気を吸いながらゆっくりとお散歩を楽しまれました。', '季節を感じられる穏やかなひとときでした。'],
+    ['お散歩では景色を眺めながら、', '「気持ちいいね」と何度も話されていました。', '良い気分転換になったようです。']
+  ],
+  craft: [
+    ['手作業に集中して取り組まれ、', '仕上がった作品を嬉しそうに眺めておられました。', '職員も完成度の高さに感心しました。'],
+    ['作品づくりでは丁寧に手を動かされ、', '完成すると満面の笑顔を見せてくださいました。', '充実した時間となりました。']
+  ],
+  conversation: [
+    ['他のご利用者様や職員と、', '昔話に花を咲かせ、楽しい時間を過ごされました。', '和やかな会話が続いていました。'],
+    ['お茶を飲みながらの会話を楽しまれ、', '笑顔で過ごされる時間が多く見られました。', 'とても穏やかな1日でした。']
+  ]
+};
+
+// ===== 状態 =====
+let state = {
+  photos: [],
+  layout: 'layout-4a',
+  theme: 'theme-spring',
+  telops: []
+};
+
+// ===== 初期化 =====
+function init() {
+  // 季節判定
+  const month = new Date().getMonth() + 1;
+  let defaultTheme = 'theme-spring';
+  if (month >= 3 && month <= 5) defaultTheme = 'theme-spring';
+  else if (month >= 6 && month <= 8) defaultTheme = 'theme-summer';
+  else if (month >= 9 && month <= 11) defaultTheme = 'theme-autumn';
+  else defaultTheme = 'theme-winter';
+  state.theme = defaultTheme;
+
+  // 日付デフォルト（本日）
+  const today = new Date();
+  const iso = today.toISOString().slice(0, 10);
+  document.getElementById('startDate').value = iso;
+
+  buildChips();
+  applyTheme();
+  renderPhotos();
+  bindEvents();
+  updateMeta();
+}
+
+// ===== チップ生成 =====
+function buildChips() {
+  const lc = document.getElementById('layoutChips');
+  lc.innerHTML = '';
+  const count = state.photos.length || 4;
+  const list = layouts[count] || layouts[4];
+  list.forEach(l => {
+    const c = document.createElement('div');
+    c.className = 'chip' + (state.layout === l.id ? ' active' : '');
+    c.textContent = l.name;
+    c.onclick = () => { state.layout = l.id; applyLayout(); buildChips(); };
+    lc.appendChild(c);
+  });
+
+  const tc = document.getElementById('themeChips');
+  tc.innerHTML = '';
+  themes.forEach(t => {
+    const c = document.createElement('div');
+    c.className = 'chip' + (state.theme === t.id ? ' active' : '');
+    c.textContent = t.name;
+    c.onclick = () => { state.theme = t.id; applyTheme(); buildChips(); };
+    tc.appendChild(c);
+  });
+}
+
+// ===== テーマ適用 =====
+function applyTheme() {
+  const page = document.getElementById('page');
+  themes.forEach(t => page.classList.remove(t.id));
+  page.classList.add(state.theme);
+}
+
+// ===== レイアウト適用 =====
+function applyLayout() {
+  const area = document.getElementById('photoArea');
+  Object.values(layouts).flat().forEach(l => area.classList.remove(l.id));
+  area.classList.add(state.layout);
+}
+
+// ===== 写真描画 =====
+function renderPhotos() {
+  const area = document.getElementById('photoArea');
+  // テロップを退避
+  const telopEls = Array.from(area.querySelectorAll('.telop'));
+  area.innerHTML = '';
+  const count = state.photos.length;
+  if (count === 0) {
+    for (let i = 0; i < 4; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'photo-cell';
+      cell.innerHTML = '<div class="placeholder">📷<br>写真を選択してください</div>';
+      area.appendChild(cell);
+    }
+  } else {
+    state.photos.forEach((src, i) => {
+      const cell = document.createElement('div');
+      cell.className = 'photo-cell';
+      cell.innerHTML = `<img src="${src}" alt="photo${i}">`;
+      cell.onclick = () => swapPhoto(i);
+      area.appendChild(cell);
+    });
+  }
+  // テロップを戻す
+  telopEls.forEach(el => area.appendChild(el));
+  applyLayout();
+}
+
+let swapFirst = null;
+function swapPhoto(i) {
+  if (swapFirst === null) {
+    swapFirst = i;
+    document.querySelectorAll('.photo-cell')[i].style.outline = '3px solid #2a5d8f';
+  } else {
+    if (swapFirst !== i) {
+      [state.photos[swapFirst], state.photos[i]] = [state.photos[i], state.photos[swapFirst]];
+    }
+    swapFirst = null;
+    renderPhotos();
+  }
+}
+
+// ===== 写真選択 =====
+document.getElementById('photoInput').addEventListener('change', (e) => {
+  const files = Array.from(e.target.files).slice(0, 4);
+  state.photos = [];
+  let loaded = 0;
+  files.forEach((f, i) => {
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      state.photos[i] = ev.target.result;
+      loaded++;
+      if (loaded === files.length) {
+        // 枚数に応じてレイアウト調整
+        if (state.photos.length === 3 && !state.layout.startsWith('layout-3')) state.layout = 'layout-3a';
+        if (state.photos.length === 4 && !state.layout.startsWith('layout-4')) state.layout = 'layout-4a';
+        buildChips();
+        renderPhotos();
+      }
+    };
+    reader.readAsDataURL(f);
+  });
+});
+
+// ===== テロップ =====
+function addTelop() {
+  const text = document.getElementById('telopText').value.trim()
+    || telopSamples[Math.floor(Math.random() * telopSamples.length)];
+  const style = telopStyles[Math.floor(Math.random() * telopStyles.length)];
+  const area = document.getElementById('photoArea');
+  const el = document.createElement('div');
+  el.className = 'telop ' + style;
+  el.innerHTML = (style === 'tel-ribbon' ? `<span>${escapeHtml(text)}</span>` : escapeHtml(text))
+    + '<button class="del" onclick="this.parentElement.remove()">×</button>';
+  // ランダム位置
+  const rect = area.getBoundingClientRect();
+  el.style.left = (20 + Math.random() * (rect.width - 200)) + 'px';
+  el.style.top  = (20 + Math.random() * (rect.height - 80)) + 'px';
+  makeDraggable(el);
+  area.appendChild(el);
+  document.getElementById('telopText').value = '';
+}
+
+function clearTelops() {
+  document.querySelectorAll('.telop').forEach(t => t.remove());
+}
+
+function makeDraggable(el) {
+  let sx, sy, ox, oy, drag = false;
+  el.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('del')) return;
+    drag = true;
+    sx = e.clientX; sy = e.clientY;
+    ox = el.offsetLeft; oy = el.offsetTop;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!drag) return;
+    el.style.left = (ox + e.clientX - sx) + 'px';
+    el.style.top  = (oy + e.clientY - sy) + 'px';
+  });
+  document.addEventListener('mouseup', () => drag = false);
+}
+
+// ===== AIコメント生成 =====
+function generateAI() {
+  const scene = document.getElementById('aiScene').value;
+  const candidates = aiTemplates[scene] || aiTemplates.general;
+  // ランダムで一文ずつ別パターンから選んで自然に組み立て
+  const pick = candidates[Math.floor(Math.random() * candidates.length)];
+  const text = pick.join('');
+  document.getElementById('commentText').value = text;
+  document.getElementById('commentArea').textContent = text;
+}
+
+// ===== バインド =====
+function bindEvents() {
+  document.getElementById('commentText').addEventListener('input', e => {
+    document.getElementById('commentArea').textContent = e.target.value || ' ';
+  });
+  document.getElementById('startDate').addEventListener('input', updateMeta);
+  document.getElementById('endDate').addEventListener('input', updateMeta);
+  document.getElementById('staffName').addEventListener('input', updateMeta);
+}
+
+function formatDateRange(startStr, endStr) {
+  if (!startStr) return '　　　　';
+  const s = new Date(startStr);
+  const sY = s.getFullYear(), sM = s.getMonth() + 1, sD = s.getDate();
+  if (!endStr) return `${sY}年${sM}月${sD}日`;
+  const e = new Date(endStr);
+  const eY = e.getFullYear(), eM = e.getMonth() + 1, eD = e.getDate();
+  if (s.getTime() === e.getTime()) return `${sY}年${sM}月${sD}日`;
+  if (sY === eY && sM === eM) return `${sY}年${sM}月${sD}日〜${eD}日`;
+  if (sY === eY) return `${sY}年${sM}月${sD}日〜${eM}月${eD}日`;
+  return `${sY}年${sM}月${sD}日〜${eY}年${eM}月${eD}日`;
+}
+
+function updateMeta() {
+  document.getElementById('metaDate').textContent =
+    formatDateRange(document.getElementById('startDate').value,
+                    document.getElementById('endDate').value);
+  document.getElementById('metaStaff').textContent =
+    document.getElementById('staffName').value || '　　　';
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+init();
+</script>
+</body>
+</html>
