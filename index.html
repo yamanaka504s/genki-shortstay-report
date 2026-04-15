@@ -5,7 +5,7 @@
 <title>元気の家ショートステイ 報告書作成</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700;900&family=Sawarabi+Mincho&family=Kosugi+Maru&family=Mochiy+Pop+One&family=Klee+One:wght@600&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Shippori+Mincho+B1:wght@700;800&family=Noto+Serif+JP:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Zen+Old+Mincho:wght@700;900&family=Sawarabi+Mincho&family=Klee+One:wght@400;600&family=Zen+Kurenaido&family=Cormorant+Garamond:wght@400;600;700&family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
 <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/dist/face-api.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -49,14 +49,22 @@
   /* ===== A4用紙 ===== */
   .page {
     width: 210mm; min-height: 297mm; background: #fff;
-    box-shadow: 0 4px 18px rgba(0,0,0,.15);
-    padding: 12mm; position: relative; overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,.18);
+    padding: 14mm 14mm 12mm; position: relative; overflow: hidden;
     display: flex; flex-direction: column;
   }
-  .header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 10px; }
-  .title-area .main-title { font-size: 22px; font-weight: bold; }
-  .title-area .sub-title { font-size: 12px; opacity: .7; }
-  .meta { text-align: right; font-size: 11px; line-height: 1.7; }
+  .header {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: end; gap: 14px;
+    padding-bottom: 12px; margin-bottom: 14px;
+  }
+  .title-area { text-align: left; }
+  .title-area .main-title { font-size: 24px; font-weight: 700; line-height: 1.2; }
+  .title-area .sub-title { font-size: 11.5px; opacity: .85; margin-top: 4px; letter-spacing: 3px; }
+  .title-area .ornament { display: block; margin-top: 6px; line-height: 0; color: currentColor; }
+  .title-area .ornament svg { color: inherit; }
+  .meta { text-align: right; font-size: 10.5px; line-height: 1.9; letter-spacing: .5px; }
+  .meta-label { display: inline-block; font-size: 9px; opacity: .7; margin-right: 4px; letter-spacing: 2px; }
 
   /* ===== 写真エリア ===== */
   .photo-area { flex: 1.2; display: grid; gap: 6px; position: relative; min-height: 130mm; }
@@ -67,21 +75,29 @@
   .photo-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .photo-cell .placeholder { color: #aaa; font-size: 14px; text-align: center; padding: 16px; }
 
-  /* ===== レイアウト（シンプルな3種） ===== */
+  /* ===== レイアウト（3種） ===== */
   /* 四角パターン（グリッド） */
-  .photo-area[data-count="3"].pat-square { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr; gap: 8px; }
-  .photo-area[data-count="4"].pat-square { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; }
+  .photo-area[data-count="3"].pat-square { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr; gap: 10px; }
+  .photo-area[data-count="4"].pat-square { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 12px; }
 
-  /* 円パターン（各セルを真円に） */
-  .photo-area[data-count="3"].pat-circle { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr; gap: 10px; align-items: center; }
-  .photo-area[data-count="4"].pat-circle { grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: 1fr; gap: 10px; align-items: center; }
-  .pat-circle .photo-cell { aspect-ratio: 1 / 1; border-radius: 50% !important; box-shadow: 0 6px 18px rgba(0,0,0,.15); border: 4px solid #fff; }
+  /* 円パターン（flex でセンタリング、大きめ円） */
+  .pat-circle { display: flex !important; flex-wrap: wrap; gap: 14px;
+    align-items: center; align-content: center; justify-content: center;
+    padding: 4mm 6mm;
+  }
+  .pat-circle .photo-cell {
+    flex: 0 0 auto; aspect-ratio: 1 / 1; border-radius: 50% !important;
+    box-shadow: 0 8px 22px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.04);
+    border: 5px solid #fff; overflow: hidden;
+  }
   .pat-circle .photo-cell img { border-radius: 50%; }
+  .photo-area[data-count="3"].pat-circle .photo-cell { width: calc(33% - 12px); }
+  .photo-area[data-count="4"].pat-circle .photo-cell { width: calc(50% - 14px); }
 
   /* 大小メリハリパターン */
-  .photo-area[data-count="3"].pat-contrast { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; }
+  .photo-area[data-count="3"].pat-contrast { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; }
   .photo-area[data-count="3"].pat-contrast .photo-cell:nth-child(1) { grid-row: span 2; }
-  .photo-area[data-count="4"].pat-contrast { grid-template-columns: 2.2fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 8px; }
+  .photo-area[data-count="4"].pat-contrast { grid-template-columns: 2.2fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 10px; }
   .photo-area[data-count="4"].pat-contrast .photo-cell:nth-child(1) { grid-row: span 3; }
 
   /* ===== デザインイラスト背景レイヤー ===== */
@@ -89,10 +105,21 @@
   .design-bg svg { width: 100%; height: 100%; display: block; }
   .page > .header, .page > .photo-area, .page > .comment-area, .page > .footer { position: relative; z-index: 2; }
 
-  /* ===== 写真の基本仕上げ（パターン共通の微調整） ===== */
-  .pat-square .photo-cell { border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,.12); }
-  .pat-contrast .photo-cell { border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,.12); }
-  .pat-contrast .photo-cell:first-child { border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
+  /* ===== 写真の基本仕上げ（パターン共通・高品質） ===== */
+  .pat-square .photo-cell, .pat-contrast .photo-cell {
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px -6px rgba(0,0,0,.2);
+    border: 1px solid rgba(255,255,255,.6);
+  }
+  .pat-contrast .photo-cell:first-child {
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1), 0 14px 32px -8px rgba(0,0,0,.25);
+  }
+  .photo-cell { position: relative; }
+  .photo-cell::after { content: ''; position: absolute; inset: 0;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.04); pointer-events: none;
+    border-radius: inherit;
+  }
 
   /* ===== テロップ（SVGイラスト入り） ===== */
   .telop {
@@ -151,105 +178,120 @@
 
   /* ===== コメント ===== */
   .comment-area {
-    margin-top: 8px; padding: 12px 16px; border-radius: 8px;
-    font-size: 13px; line-height: 1.7; min-height: 60px;
+    margin-top: 12px; padding: 16px 22px; border-radius: 8px;
+    font-size: 13.5px; line-height: 1.95; min-height: 60px;
+    letter-spacing: .8px;
   }
 
   /* ===== フッター ===== */
-  .footer { margin-top: 8px; padding-top: 6px; font-size: 10px; opacity: .7;
-    border-top: 1px dashed #ccc; display: flex; justify-content: space-between; }
+  .footer { margin-top: 10px; padding-top: 8px; font-size: 9.5px; opacity: .8;
+    border-top: 1px solid currentColor; display: flex; justify-content: space-between;
+    letter-spacing: 2px;
+  }
+  .footer .brand { font-weight: 700; }
 
-  /* ===== プロデザイン10種（イラスト+カラー+タイポ） ===== */
+  /* ===== プロデザイン10種（ブランディング品質） ===== */
+  /* 共通: Cormorant Garamond で英語サブ装飾、Shippori Mincho で和タイトル */
 
-  /* ① 優雅桜 — 桜の花びらが舞う、淡いピンク基調 */
-  .dsg-sakura { background: linear-gradient(180deg, #fff5f8 0%, #fffdfd 70%); }
-  .dsg-sakura .main-title { color: #b71c4b; font-family: "Noto Serif JP", serif; font-weight: 900; letter-spacing: 4px; }
-  .dsg-sakura .sub-title { color: #d05078; font-family: "Sawarabi Mincho", serif; }
-  .dsg-sakura .header { border-bottom: 2px solid #d43e6f; }
-  .dsg-sakura .meta { color: #7a1f3d; }
-  .dsg-sakura .comment-area { background: rgba(255,236,242,.85); border-left: 5px solid #d43e6f; color: #6a1230; font-family: "Klee One", serif; border-radius: 12px; }
-  .dsg-sakura .footer { color: #b71c4b; border-top-color: #f0a8c0; }
+  /* ① 桜雅 (Sakura Elegance) — 墨桜＋品位ある余白構成 */
+  .dsg-sakura { background: #fffaf5; color: #3d1f2b; }
+  .dsg-sakura .main-title { color: #8b2c4e; font-family: "Shippori Mincho B1", "Shippori Mincho", serif; font-weight: 800; letter-spacing: 8px; }
+  .dsg-sakura .sub-title { color: #b85778; font-family: "Cormorant Garamond", serif; font-style: italic; letter-spacing: 4px; font-weight: 600; }
+  .dsg-sakura .header { border-bottom: none; padding-bottom: 14px; }
+  .dsg-sakura .meta { color: #6a2a40; font-family: "Cormorant Garamond", serif; font-weight: 500; }
+  .dsg-sakura .meta-label { color: #b85778; }
+  .dsg-sakura .comment-area { background: rgba(255,255,255,.7); border: none; box-shadow: inset 0 0 0 1px rgba(139,44,78,.2); color: #3d1f2b; font-family: "Shippori Mincho", serif; font-weight: 500; padding: 20px 26px; }
+  .dsg-sakura .footer { color: #8b2c4e; border-top-color: rgba(139,44,78,.3); }
 
-  /* ② 和モダン — 墨色×朱色、青海波と印 */
-  .dsg-wamodern { background: #faf5ee; }
-  .dsg-wamodern .main-title { color: #1a1a1a; font-family: "Noto Serif JP", serif; font-weight: 900; letter-spacing: 6px; }
-  .dsg-wamodern .sub-title { color: #b22222; font-family: "Sawarabi Mincho", serif; letter-spacing: 2px; }
-  .dsg-wamodern .header { border-bottom: 1px solid #1a1a1a; padding-bottom: 14px; }
-  .dsg-wamodern .meta { color: #1a1a1a; font-family: "Sawarabi Mincho", serif; }
-  .dsg-wamodern .comment-area { background: rgba(255,255,255,.85); border: 1px solid #1a1a1a; border-left: 5px solid #b22222; color: #1a1a1a; font-family: "Sawarabi Mincho", serif; }
+  /* ② 和モダン (Wa-Modern) — 墨×朱、極細罫線 */
+  .dsg-wamodern { background: #f7f2e9; color: #1a1a1a; }
+  .dsg-wamodern .main-title { color: #1a1a1a; font-family: "Zen Old Mincho", "Shippori Mincho", serif; font-weight: 900; letter-spacing: 10px; }
+  .dsg-wamodern .sub-title { color: #9c1a1a; font-family: "Shippori Mincho", serif; letter-spacing: 6px; font-weight: 500; }
+  .dsg-wamodern .header { border-bottom: none; padding-bottom: 14px; }
+  .dsg-wamodern .meta { color: #1a1a1a; font-family: "Shippori Mincho", serif; }
+  .dsg-wamodern .meta-label { color: #9c1a1a; font-family: "Cormorant Garamond", serif; }
+  .dsg-wamodern .comment-area { background: transparent; border: none; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a; color: #1a1a1a; font-family: "Shippori Mincho", serif; font-weight: 500; border-radius: 0; padding: 18px 8px; }
   .dsg-wamodern .footer { color: #1a1a1a; border-top-color: #1a1a1a; }
 
-  /* ③ ナチュラル植物 — 緑の蔦と小花、優しい印象 */
-  .dsg-botanical { background: linear-gradient(180deg, #f4f9f1 0%, #fefffd 60%); }
-  .dsg-botanical .main-title { color: #2e5a2c; font-family: "Klee One", serif; font-weight: 700; letter-spacing: 2px; }
-  .dsg-botanical .sub-title { color: #5a8056; }
-  .dsg-botanical .header { border-bottom: 2px dashed #7ba87a; }
-  .dsg-botanical .meta { color: #3d6b3a; }
-  .dsg-botanical .comment-area { background: rgba(255,255,255,.8); border: 2px solid #a8c4a3; border-radius: 18px; color: #2e4a2c; font-family: "Klee One", serif; }
-  .dsg-botanical .footer { color: #2e5a2c; border-top-color: #c5dcc1; }
+  /* ③ 植物園 (Botanical Garden) — 深緑とクリーム */
+  .dsg-botanical { background: #f5f7ee; color: #2c4024; }
+  .dsg-botanical .main-title { color: #2c4024; font-family: "Shippori Mincho", serif; font-weight: 800; letter-spacing: 4px; }
+  .dsg-botanical .sub-title { color: #5a7547; font-family: "Cormorant Garamond", serif; font-style: italic; letter-spacing: 3px; font-weight: 600; }
+  .dsg-botanical .header { border-bottom: 1px solid rgba(44,64,36,.2); padding-bottom: 14px; }
+  .dsg-botanical .meta { color: #2c4024; font-family: "Cormorant Garamond", serif; font-weight: 500; }
+  .dsg-botanical .meta-label { color: #5a7547; }
+  .dsg-botanical .comment-area { background: rgba(255,255,255,.55); border: none; box-shadow: 0 2px 12px rgba(44,64,36,.08); border-radius: 4px; color: #2c4024; font-family: "Shippori Mincho", serif; font-weight: 500; padding: 20px 26px; }
+  .dsg-botanical .footer { color: #2c4024; border-top-color: rgba(44,64,36,.25); }
 
-  /* ④ ゴールドラグジュアリー — アイボリー×ゴールド、装飾コーナー */
-  .dsg-gold { background: linear-gradient(180deg, #fff9eb 0%, #fefdf6 50%); }
-  .dsg-gold .main-title { color: #5a3d00; font-family: "Noto Serif JP", serif; font-weight: 900; letter-spacing: 6px; text-shadow: 0 1px 0 rgba(255,255,255,.6); }
-  .dsg-gold .sub-title { color: #8a6516; font-family: "Sawarabi Mincho", serif; letter-spacing: 2px; }
-  .dsg-gold .header { border-bottom: 3px double #c99530; }
-  .dsg-gold .meta { color: #5a3d00; }
-  .dsg-gold .comment-area { background: rgba(255,251,238,.9); border: 2px solid #c99530; color: #5a3d00; font-family: "Noto Serif JP", serif; }
-  .dsg-gold .footer { color: #8a6516; border-top-color: #d9b75a; }
+  /* ④ 金彩 (Gold Atelier) — 黒背景アイボリー金 */
+  .dsg-gold { background: #fdfaf0; color: #2a2416; }
+  .dsg-gold .main-title { color: #1a1406; font-family: "Shippori Mincho B1", serif; font-weight: 800; letter-spacing: 10px; }
+  .dsg-gold .sub-title { color: #8a6816; font-family: "Cinzel", serif; letter-spacing: 6px; font-weight: 500; }
+  .dsg-gold .header { border-bottom: none; padding-bottom: 14px; }
+  .dsg-gold .meta { color: #1a1406; font-family: "Cinzel", serif; font-weight: 500; font-size: 10px; }
+  .dsg-gold .meta-label { color: #8a6816; }
+  .dsg-gold .comment-area { background: transparent; border: none; outline: 1px solid rgba(138,104,22,.5); outline-offset: -1px; box-shadow: inset 0 0 0 5px #fdfaf0, inset 0 0 0 6px rgba(138,104,22,.5); color: #1a1406; font-family: "Shippori Mincho", serif; font-weight: 500; padding: 22px 28px; border-radius: 0; }
+  .dsg-gold .footer { color: #8a6816; border-top-color: rgba(138,104,22,.4); font-family: "Cinzel", serif; }
 
-  /* ⑤ 水彩ブーケ — 水彩花束、優しいパステル */
-  .dsg-watercolor { background: #fffcf9; }
-  .dsg-watercolor .main-title { color: #c84a6e; font-family: "Klee One", serif; font-weight: 700; letter-spacing: 2px; }
-  .dsg-watercolor .sub-title { color: #8a4068; font-family: "Klee One", serif; }
-  .dsg-watercolor .header { border-bottom: 2px solid #f0bcc9; }
-  .dsg-watercolor .meta { color: #8a4068; font-family: "Klee One", serif; }
-  .dsg-watercolor .comment-area { background: rgba(255,247,243,.9); border-left: 5px solid #e88aaa; color: #5a2840; font-family: "Klee One", serif; border-radius: 14px; }
-  .dsg-watercolor .footer { color: #8a4068; border-top-color: #f0bcc9; }
+  /* ⑤ 水彩 (Watercolor Atelier) — 穏やかなパステル */
+  .dsg-watercolor { background: #fefaf6; color: #4a2438; }
+  .dsg-watercolor .main-title { color: #a03858; font-family: "Shippori Mincho", serif; font-weight: 700; letter-spacing: 6px; }
+  .dsg-watercolor .sub-title { color: #7a4060; font-family: "Cormorant Garamond", serif; font-style: italic; letter-spacing: 4px; font-weight: 600; }
+  .dsg-watercolor .header { border-bottom: none; padding-bottom: 14px; }
+  .dsg-watercolor .meta { color: #7a4060; font-family: "Cormorant Garamond", serif; font-weight: 500; }
+  .dsg-watercolor .meta-label { color: #a03858; }
+  .dsg-watercolor .comment-area { background: rgba(255,255,255,.6); border: none; border-radius: 2px; box-shadow: 0 4px 18px rgba(160,56,88,.12); color: #4a2438; font-family: "Klee One", serif; font-weight: 400; padding: 20px 26px; }
+  .dsg-watercolor .footer { color: #7a4060; border-top-color: rgba(122,64,96,.3); }
 
-  /* ⑥ クラシカル額 — 重厚な額縁風 */
-  .dsg-classical { background: #fbf6ec; }
-  .dsg-classical .main-title { color: #3a2810; font-family: "Noto Serif JP", serif; font-weight: 900; letter-spacing: 5px; }
-  .dsg-classical .sub-title { color: #6b4a20; font-family: "Sawarabi Mincho", serif; }
-  .dsg-classical .header { border-bottom: 1px solid #6b4a20; padding-bottom: 14px; }
-  .dsg-classical .meta { color: #3a2810; font-family: "Noto Serif JP", serif; }
-  .dsg-classical .comment-area { background: rgba(255,253,247,.95); border: 1px solid #6b4a20; outline: 3px double #6b4a20; outline-offset: -8px; color: #3a2810; font-family: "Noto Serif JP", serif; padding: 18px 22px; }
-  .dsg-classical .footer { color: #3a2810; border-top-color: #6b4a20; }
+  /* ⑥ 古典 (Classical Frame) — 重厚なフレーム */
+  .dsg-classical { background: #faf4e8; color: #2a1f0e; }
+  .dsg-classical .main-title { color: #2a1f0e; font-family: "Shippori Mincho B1", serif; font-weight: 800; letter-spacing: 8px; }
+  .dsg-classical .sub-title { color: #6b4a20; font-family: "Cormorant Garamond", serif; font-style: italic; letter-spacing: 5px; font-weight: 600; }
+  .dsg-classical .header { border-bottom: none; padding-bottom: 14px; }
+  .dsg-classical .meta { color: #2a1f0e; font-family: "Cormorant Garamond", serif; font-weight: 600; }
+  .dsg-classical .meta-label { color: #6b4a20; }
+  .dsg-classical .comment-area { background: transparent; border: none; border-top: 1px solid #6b4a20; border-bottom: 1px solid #6b4a20; color: #2a1f0e; font-family: "Shippori Mincho", serif; font-weight: 500; padding: 20px 8px; border-radius: 0; }
+  .dsg-classical .footer { color: #2a1f0e; border-top-color: #6b4a20; font-family: "Cormorant Garamond", serif; }
 
-  /* ⑦ 北欧パステル — ミント×ピーチ */
-  .dsg-scandi { background: linear-gradient(135deg, #f0f9f5 0%, #fff7f3 100%); }
-  .dsg-scandi .main-title { color: #2e6b5e; font-family: "Mochiy Pop One", sans-serif; letter-spacing: 1px; }
-  .dsg-scandi .sub-title { color: #d97a5f; font-family: "Klee One", serif; }
-  .dsg-scandi .header { border-bottom: 4px solid #ffc4a8; }
-  .dsg-scandi .meta { color: #2e6b5e; }
-  .dsg-scandi .comment-area { background: rgba(255,255,255,.9); border-radius: 20px; box-shadow: 0 4px 14px rgba(46,107,94,.1); color: #2e4a44; font-family: "Klee One", serif; }
-  .dsg-scandi .footer { color: #2e6b5e; border-top-color: #c4e8d8; }
+  /* ⑦ 北欧 (Nordic Minimal) — ミニマル */
+  .dsg-scandi { background: #f8f5f0; color: #2c3e36; }
+  .dsg-scandi .main-title { color: #2c3e36; font-family: "Zen Kaku Gothic New", sans-serif; font-weight: 900; letter-spacing: 3px; }
+  .dsg-scandi .sub-title { color: #c17a5f; font-family: "Cormorant Garamond", serif; font-style: italic; letter-spacing: 4px; font-weight: 500; }
+  .dsg-scandi .header { border-bottom: 2px solid #2c3e36; padding-bottom: 14px; }
+  .dsg-scandi .meta { color: #2c3e36; font-family: "Zen Kaku Gothic New", sans-serif; font-weight: 500; }
+  .dsg-scandi .meta-label { color: #c17a5f; }
+  .dsg-scandi .comment-area { background: rgba(255,255,255,.7); border: none; border-radius: 2px; color: #2c3e36; font-family: "Zen Kaku Gothic New", sans-serif; font-weight: 400; padding: 20px 26px; }
+  .dsg-scandi .footer { color: #2c3e36; border-top-color: #2c3e36; font-family: "Zen Kaku Gothic New", sans-serif; }
 
-  /* ⑧ 秋の実り — 紅葉と木の実 */
-  .dsg-autumn { background: linear-gradient(180deg, #fff3e6 0%, #fefcf8 60%); }
-  .dsg-autumn .main-title { color: #8c3a10; font-family: "Noto Serif JP", serif; font-weight: 900; letter-spacing: 3px; }
-  .dsg-autumn .sub-title { color: #b8682e; font-family: "Sawarabi Mincho", serif; }
-  .dsg-autumn .header { border-bottom: 3px solid #d96a1e; }
-  .dsg-autumn .meta { color: #8c3a10; }
-  .dsg-autumn .comment-area { background: rgba(255,238,220,.85); border-left: 5px solid #d96a1e; color: #5a2410; font-family: "Klee One", serif; border-radius: 10px; }
-  .dsg-autumn .footer { color: #8c3a10; border-top-color: #e9b888; }
+  /* ⑧ 紅葉 (Autumn Maple) — 深いテラコッタ */
+  .dsg-autumn { background: #fdf6ec; color: #4a2210; }
+  .dsg-autumn .main-title { color: #7a2e10; font-family: "Shippori Mincho B1", serif; font-weight: 800; letter-spacing: 6px; }
+  .dsg-autumn .sub-title { color: #b8682e; font-family: "Cormorant Garamond", serif; font-style: italic; letter-spacing: 4px; font-weight: 600; }
+  .dsg-autumn .header { border-bottom: 1px solid rgba(122,46,16,.3); padding-bottom: 14px; }
+  .dsg-autumn .meta { color: #7a2e10; font-family: "Cormorant Garamond", serif; font-weight: 500; }
+  .dsg-autumn .meta-label { color: #b8682e; }
+  .dsg-autumn .comment-area { background: rgba(255,255,255,.55); border: none; box-shadow: inset 0 0 0 1px rgba(122,46,16,.2); color: #4a2210; font-family: "Shippori Mincho", serif; font-weight: 500; padding: 20px 26px; }
+  .dsg-autumn .footer { color: #7a2e10; border-top-color: rgba(122,46,16,.3); }
 
-  /* ⑨ 冬のぬくもり — 雪と常緑樹 */
-  .dsg-winter { background: linear-gradient(180deg, #eef5fa 0%, #fdfeff 60%); }
-  .dsg-winter .main-title { color: #1f4e6e; font-family: "Noto Serif JP", serif; font-weight: 900; letter-spacing: 4px; }
-  .dsg-winter .sub-title { color: #4a7595; font-family: "Klee One", serif; }
-  .dsg-winter .header { border-bottom: 2px solid #4a7595; }
-  .dsg-winter .meta { color: #1f4e6e; }
-  .dsg-winter .comment-area { background: rgba(255,255,255,.85); border: 2px solid #b6cfdf; border-radius: 14px; color: #1f3548; font-family: "Klee One", serif; }
-  .dsg-winter .footer { color: #1f4e6e; border-top-color: #b6cfdf; }
+  /* ⑨ 冬 (Winter Serene) — 静謐な藍 */
+  .dsg-winter { background: #f4f8fb; color: #19354a; }
+  .dsg-winter .main-title { color: #19354a; font-family: "Shippori Mincho B1", serif; font-weight: 800; letter-spacing: 8px; }
+  .dsg-winter .sub-title { color: #4a7595; font-family: "Cormorant Garamond", serif; font-style: italic; letter-spacing: 4px; font-weight: 600; }
+  .dsg-winter .header { border-bottom: 1px solid rgba(25,53,74,.25); padding-bottom: 14px; }
+  .dsg-winter .meta { color: #19354a; font-family: "Cormorant Garamond", serif; font-weight: 500; }
+  .dsg-winter .meta-label { color: #4a7595; }
+  .dsg-winter .comment-area { background: rgba(255,255,255,.65); border: none; border-radius: 2px; box-shadow: 0 2px 12px rgba(25,53,74,.08); color: #19354a; font-family: "Shippori Mincho", serif; font-weight: 500; padding: 20px 26px; }
+  .dsg-winter .footer { color: #19354a; border-top-color: rgba(25,53,74,.25); }
 
-  /* ⑩ 手描きストーリー — 温かみのある手描き風 */
-  .dsg-handdrawn { background: #fffbed; }
-  .dsg-handdrawn .main-title { color: #3a2c1a; font-family: "Zen Kurenaido", "Klee One", serif; font-weight: 700; letter-spacing: 2px; }
-  .dsg-handdrawn .sub-title { color: #8a6a3a; font-family: "Zen Kurenaido", serif; }
-  .dsg-handdrawn .header { border-bottom: 3px dashed #c99530; }
-  .dsg-handdrawn .meta { color: #3a2c1a; font-family: "Zen Kurenaido", serif; }
-  .dsg-handdrawn .comment-area { background: rgba(255,255,238,.85); border: 2.5px solid #3a2c1a; border-radius: 16px; color: #3a2c1a; font-family: "Zen Kurenaido", serif; font-weight: 600; }
-  .dsg-handdrawn .footer { color: #3a2c1a; border-top: 1px dashed #3a2c1a; }
+  /* ⑩ 手描き (Atelier Hand) — 温かな手仕事感 */
+  .dsg-handdrawn { background: #fdf9ed; color: #2e2410; }
+  .dsg-handdrawn .main-title { color: #2e2410; font-family: "Klee One", serif; font-weight: 600; letter-spacing: 4px; }
+  .dsg-handdrawn .sub-title { color: #8a6a3a; font-family: "Cormorant Garamond", serif; font-style: italic; letter-spacing: 3px; font-weight: 600; }
+  .dsg-handdrawn .header { border-bottom: none; padding-bottom: 14px; }
+  .dsg-handdrawn .meta { color: #2e2410; font-family: "Klee One", serif; }
+  .dsg-handdrawn .meta-label { color: #8a6a3a; }
+  .dsg-handdrawn .comment-area { background: rgba(255,252,235,.7); border: none; color: #2e2410; font-family: "Klee One", serif; font-weight: 400; padding: 20px 26px; border-radius: 2px; }
+  .dsg-handdrawn .footer { color: #2e2410; border-top-color: rgba(46,36,16,.3); }
 
   /* ===== 印刷 ===== */
   @media print {
@@ -330,11 +372,12 @@
       <div class="design-bg" id="designBg"></div>
       <div class="header">
         <div class="title-area">
-          <div class="main-title">ショートステイご利用報告</div>
+          <div class="main-title">ご利用報告書</div>
           <div class="sub-title">元気の家ショートステイ</div>
+          <div class="ornament" id="ornament"></div>
         </div>
         <div class="meta">
-          <div>利用日: <span id="metaDate">　　　　</span></div>
+          <div><span class="meta-label">DATE</span><span id="metaDate">　　　　</span></div>
         </div>
       </div>
 
@@ -372,6 +415,40 @@ const designs = [
   { id: 'dsg-winter',     name: '冬のぬくもり',     seasons: [12,1,2] },
   { id: 'dsg-handdrawn',  name: '手描きストーリー', seasons: [] }
 ];
+
+// ===== タイトル下のオーナメント =====
+function ornamentSVG(id) {
+  const wrap = c => `<svg viewBox="0 0 80 20" xmlns="http://www.w3.org/2000/svg" style="width:80px;height:16px;">${c}</svg>`;
+  if (['dsg-sakura','dsg-watercolor'].includes(id)) return wrap(`
+    <g stroke="currentColor" stroke-width=".8" fill="none"><line x1="0" y1="10" x2="30" y2="10"/><line x1="50" y1="10" x2="80" y2="10"/></g>
+    <g transform="translate(40,10)" fill="currentColor"><ellipse cx="0" cy="-3" rx="2" ry="3"/><ellipse cx="3" cy="0" rx="3" ry="2"/><ellipse cx="0" cy="3" rx="2" ry="3"/><ellipse cx="-3" cy="0" rx="3" ry="2"/></g>
+  `);
+  if (['dsg-wamodern','dsg-classical','dsg-gold'].includes(id)) return wrap(`
+    <g stroke="currentColor" stroke-width=".8" fill="none"><line x1="0" y1="10" x2="32" y2="10"/><line x1="48" y1="10" x2="80" y2="10"/></g>
+    <g transform="translate(40,10)" fill="currentColor"><path d="M 0,-4 L 3,0 L 0,4 L -3,0 Z"/></g>
+  `);
+  if (['dsg-botanical'].includes(id)) return wrap(`
+    <g stroke="currentColor" stroke-width=".8" fill="none"><line x1="0" y1="10" x2="28" y2="10"/><line x1="52" y1="10" x2="80" y2="10"/></g>
+    <g transform="translate(40,10)" fill="currentColor"><path d="M -4,0 Q 0,-6 4,0 Q 0,6 -4,0 Z"/></g>
+  `);
+  if (['dsg-scandi'].includes(id)) return wrap(`
+    <g stroke="currentColor" stroke-width="1.5" fill="none"><line x1="0" y1="10" x2="80" y2="10"/></g>
+    <circle cx="40" cy="10" r="3" fill="currentColor"/>
+  `);
+  if (['dsg-autumn'].includes(id)) return wrap(`
+    <g stroke="currentColor" stroke-width=".8" fill="none"><line x1="0" y1="10" x2="30" y2="10"/><line x1="50" y1="10" x2="80" y2="10"/></g>
+    <g transform="translate(40,10)" fill="currentColor" opacity=".85"><path d="M 0,-5 L 2,-2 L 5,-2 L 3,1 L 5,4 L 2,3 L 0,5 L -2,3 L -5,4 L -3,1 L -5,-2 L -2,-2 Z"/></g>
+  `);
+  if (['dsg-winter'].includes(id)) return wrap(`
+    <g stroke="currentColor" stroke-width=".8" fill="none"><line x1="0" y1="10" x2="30" y2="10"/><line x1="50" y1="10" x2="80" y2="10"/></g>
+    <g transform="translate(40,10)" stroke="currentColor" stroke-width="1" fill="none"><line x1="0" y1="-5" x2="0" y2="5"/><line x1="-5" y1="0" x2="5" y2="0"/><line x1="-3.5" y1="-3.5" x2="3.5" y2="3.5"/><line x1="-3.5" y1="3.5" x2="3.5" y2="-3.5"/></g>
+  `);
+  if (['dsg-handdrawn'].includes(id)) return wrap(`
+    <g stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round"><path d="M 2,11 Q 16,9 30,11"/><path d="M 50,11 Q 64,9 78,11"/></g>
+    <g transform="translate(40,10)" fill="currentColor"><circle r="2.5"/></g>
+  `);
+  return wrap('');
+}
 
 // ===== 各デザインのSVGイラスト背景 =====
 function designBackground(id) {
@@ -1120,13 +1197,12 @@ function applyAll() {
   const page = document.getElementById('page');
   designs.forEach(d => page.classList.remove(d.id));
   page.classList.add(state.design);
-  // 背景SVG差替
   document.getElementById('designBg').innerHTML = designBackground(state.design);
-  // デザイン名表示
+  const ornEl = document.getElementById('ornament');
+  if (ornEl) ornEl.innerHTML = ornamentSVG(state.design);
   const dsg = designs.find(d => d.id === state.design);
   const nm = document.getElementById('designName');
   if (nm && dsg) nm.textContent = '現在: ' + dsg.name;
-  // 写真パターン
   const area = document.getElementById('photoArea');
   patterns.forEach(p => area.classList.remove(p.id));
   area.classList.add(state.pattern);
