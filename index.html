@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <title>元気の家ショートステイ 報告書作成</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700;900&family=Sawarabi+Mincho&family=Kosugi+Maru&family=Mochiy+Pop+One&family=Klee+One:wght@600&family=Zen+Kurenaido&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/dist/face-api.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Yu Gothic UI", "Meiryo", sans-serif; background: #eef1f5; color: #333; }
@@ -63,19 +67,22 @@
   .photo-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .photo-cell .placeholder { color: #aaa; font-size: 14px; text-align: center; padding: 16px; }
 
-  /* レイアウト: 3枚 */
-  .layout-3a { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
-  .layout-3a .photo-cell:nth-child(1) { grid-row: span 2; }
-  .layout-3b { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr; }
-  .layout-3c { grid-template-columns: 1fr 1fr; grid-template-rows: 2fr 1fr; }
-  .layout-3c .photo-cell:nth-child(1) { grid-column: span 2; }
+  /* ===== レイアウト（シンプルな3種） ===== */
+  /* 四角パターン（グリッド） */
+  .photo-area[data-count="3"].pat-square { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr; gap: 8px; }
+  .photo-area[data-count="4"].pat-square { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; }
 
-  /* レイアウト: 4枚 */
-  .layout-4a { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
-  .layout-4b { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr 1fr; }
-  .layout-4b .photo-cell:nth-child(1) { grid-row: span 3; }
-  .layout-4c { grid-template-columns: 1fr 2fr 1fr; grid-template-rows: 1fr 1fr; }
-  .layout-4c .photo-cell:nth-child(2) { grid-row: span 2; }
+  /* 円パターン（各セルを真円に） */
+  .photo-area[data-count="3"].pat-circle { grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr; gap: 10px; align-items: center; }
+  .photo-area[data-count="4"].pat-circle { grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: 1fr; gap: 10px; align-items: center; }
+  .pat-circle .photo-cell { aspect-ratio: 1 / 1; border-radius: 50% !important; box-shadow: 0 6px 18px rgba(0,0,0,.15); border: 4px solid #fff; }
+  .pat-circle .photo-cell img { border-radius: 50%; }
+
+  /* 大小メリハリパターン */
+  .photo-area[data-count="3"].pat-contrast { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; gap: 8px; }
+  .photo-area[data-count="3"].pat-contrast .photo-cell:nth-child(1) { grid-row: span 2; }
+  .photo-area[data-count="4"].pat-contrast { grid-template-columns: 2.2fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 8px; }
+  .photo-area[data-count="4"].pat-contrast .photo-cell:nth-child(1) { grid-row: span 3; }
 
   /* ===== 背景スキン（テーマに重ねる装飾） ===== */
   .skin-dots { background-image: radial-gradient(rgba(0,0,0,.06) 1.5px, transparent 1.5px); background-size: 14px 14px; }
@@ -113,77 +120,65 @@
   .commvar-quote::before { content: '“'; font-size: 30px; opacity: .4; margin-right: 6px; vertical-align: -10px; }
   .commvar-double { border: 2px double currentColor !important; border-left-width: 5px !important; }
 
-  /* ===== 写真スタイルバリエーション ===== */
-  .photo-cell.style-rounded { border-radius: 14px; }
-  .photo-cell.style-circle { border-radius: 50%; }
-  .photo-cell.style-polaroid {
-    background: #fff; padding: 6px 6px 24px;
-    box-shadow: 0 4px 10px rgba(0,0,0,.18);
-    border-radius: 2px;
-  }
-  .photo-cell.style-polaroid img { border-radius: 0; }
-  .photo-cell.style-shadow { box-shadow: 0 4px 14px rgba(0,0,0,.22); border-radius: 6px; }
-  .photo-cell.style-frame { border: 6px solid #fff; box-shadow: 0 0 0 1px #ccc, 0 4px 10px rgba(0,0,0,.15); border-radius: 4px; }
-  .photo-cell.style-doublef { border: 3px double #555; border-radius: 4px; padding: 2px; background: #fff; }
-  .photo-cell.style-tape { border-radius: 2px; box-shadow: 0 2px 6px rgba(0,0,0,.2); }
-  .photo-cell.style-tape::before {
-    content: ''; position: absolute; top: -8px; left: 30%; width: 50px; height: 18px;
-    background: rgba(255,235,150,.7); transform: rotate(-4deg); z-index: 2;
-    box-shadow: 0 1px 3px rgba(0,0,0,.1);
-  }
-  .photo-cell.style-arch { border-radius: 50% 50% 6px 6px / 30% 30% 6px 6px; }
+  /* ===== 写真の基本仕上げ（パターン共通の微調整） ===== */
+  .pat-square .photo-cell { border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,.12); }
+  .pat-contrast .photo-cell { border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,.12); }
+  .pat-contrast .photo-cell:first-child { border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,.18); }
 
-  .photo-cell.tilt-l { transform: rotate(-2deg); }
-  .photo-cell.tilt-r { transform: rotate(2deg); }
-  .photo-cell.tilt-l2 { transform: rotate(-3.5deg); }
-  .photo-cell.tilt-r2 { transform: rotate(3deg); }
-
-  /* レイアウト追加: 4枚 オフセット */
-  .layout-4d { grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
-  .layout-4d .photo-cell:nth-child(1) { grid-column: span 2; grid-row: span 2; }
-  .layout-4d .photo-cell:nth-child(2) { grid-column: span 2; }
-  .layout-4d .photo-cell:nth-child(3) { grid-column: span 1; }
-  .layout-4d .photo-cell:nth-child(4) { grid-column: span 1; }
-
-  .layout-4e { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1.4fr 1fr; }
-  .layout-4e .photo-cell:nth-child(2) { grid-column: span 2; }
-
-  /* レイアウト追加: 3枚 ストリップ */
-  .layout-3d { grid-template-columns: 1fr; grid-template-rows: 1.6fr 1fr 1fr; }
-  .layout-3e { grid-template-columns: 1fr 1.4fr; grid-template-rows: 1fr 1fr; }
-  .layout-3e .photo-cell:nth-child(2) { grid-row: span 2; }
-
-  /* ===== テロップ ===== */
+  /* ===== テロップ（SVGイラスト入り） ===== */
   .telop {
-    position: absolute; padding: 6px 14px; font-size: 13px; font-weight: bold;
-    cursor: move; user-select: none; white-space: nowrap; z-index: 5;
-    transition: transform .1s;
+    position: absolute; cursor: move; user-select: none; z-index: 10;
+    display: inline-block; transition: transform .1s;
   }
-  .telop:hover { transform: scale(1.05); }
-  .telop .del { position: absolute; top: -8px; right: -8px; background: #e74c3c; color: #fff;
-    width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: none;
-    align-items: center; justify-content: center; cursor: pointer; border: none;
+  .telop:hover { transform: scale(1.04) !important; }
+  .telop .del {
+    position: absolute; top: -10px; right: -10px; background: #e74c3c; color: #fff;
+    width: 20px; height: 20px; border-radius: 50%; font-size: 11px; display: none;
+    align-items: center; justify-content: center; cursor: pointer; border: 2px solid #fff;
+    z-index: 20;
   }
   .telop:hover .del { display: flex; }
-
-  .tel-bubble { background: #fff; border: 2px solid #2a5d8f; border-radius: 16px; color: #2a5d8f; }
-  .tel-bubble::after {
-    content: ''; position: absolute; bottom: -8px; left: 20px;
-    border: 8px solid transparent; border-top-color: #2a5d8f; border-bottom: 0;
+  .telop .deco { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .telop .deco svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .telop .txt {
+    position: relative; z-index: 1; padding: 16px 34px; font-weight: 700;
+    font-size: 18px; white-space: nowrap; display: block;
   }
-  .tel-ribbon { background: #e74c3c; color: #fff; transform: skewX(-8deg); padding: 6px 18px; }
-  .tel-ribbon span { display: inline-block; transform: skewX(8deg); }
-  .tel-sticky { background: #fff9a8; color: #5a4500; transform: rotate(-3deg);
-    box-shadow: 2px 3px 6px rgba(0,0,0,.18); border-radius: 2px; }
-  .tel-stamp { background: transparent; color: #c0392b; border: 3px double #c0392b;
-    border-radius: 50%; padding: 10px 16px; transform: rotate(-12deg); font-family: serif; }
-  .tel-highlight { background: linear-gradient(transparent 55%, #ffe066 55%); color: #333; padding: 2px 6px; }
-  .tel-handwrite { background: transparent; color: #2c3e50; font-family: "Yu Gothic", serif;
-    font-style: italic; border-bottom: 2px solid #2c3e50; border-radius: 0; padding: 4px 8px; }
-  .tel-badge { background: #f39c12; color: #fff; border-radius: 4px;
-    box-shadow: 0 3px 0 #c87f00; padding: 6px 14px; }
-  .tel-cloud { background: #fff; color: #555; border-radius: 30px;
-    box-shadow: 0 0 0 6px #fff, 0 0 0 8px #ddd; border: 2px solid #ddd; padding: 8px 16px; }
+
+  /* ① 桜リボン（ピンクグラデ・キラメキ） */
+  .tel-sakura .txt { color: #fff; font-family: "Noto Serif JP", serif;
+    text-shadow: 0 1px 2px rgba(140,30,60,.6); padding: 14px 48px; letter-spacing: 2px; }
+
+  /* ② ゴールドプレート（高級感） */
+  .tel-gold .txt { color: #5a3d00; font-family: "Noto Serif JP", serif; font-weight: 900;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5); padding: 16px 42px; letter-spacing: 3px; }
+
+  /* ③ コミック吹き出し */
+  .tel-comic .txt { color: #111; font-family: "Mochiy Pop One", sans-serif;
+    padding: 20px 38px 22px; font-size: 19px; }
+
+  /* ④ 水彩ブラシ */
+  .tel-watercolor .txt { color: #fff; font-family: "Klee One", serif; font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,.25); padding: 18px 38px; letter-spacing: 1px; }
+
+  /* ⑤ ヴィンテージスタンプ */
+  .tel-stamp .txt { color: #9c1f1f; font-family: "Noto Serif JP", serif; font-weight: 900;
+    padding: 18px 30px; letter-spacing: 4px; transform: rotate(-5deg);
+    text-shadow: 0 0 1px #9c1f1f;
+  }
+  .tel-stamp { transform: rotate(-3deg); }
+
+  /* ⑥ 手書きノート */
+  .tel-note .txt { color: #2c3e50; font-family: "Zen Kurenaido", "Klee One", serif;
+    padding: 16px 30px; font-size: 18px; font-weight: 600; }
+
+  /* ⑦ ポップステッカー */
+  .tel-pop .txt { color: #fff; font-family: "Mochiy Pop One", sans-serif;
+    padding: 16px 36px; text-shadow: 2px 2px 0 rgba(0,0,0,.3); letter-spacing: 1px; }
+
+  /* ⑧ 季節フラワー */
+  .tel-flower .txt { color: #4a3b2a; font-family: "Sawarabi Mincho", serif; font-weight: 700;
+    padding: 18px 52px; letter-spacing: 2px; }
 
   /* ===== コメント ===== */
   .comment-area {
@@ -279,9 +274,10 @@
     </div>
 
     <div class="group">
-      <h2>② 写真デザイン</h2>
-      <button onclick="shuffleDesign()" style="width:100%;">🎨 デザイン変更（押すたびに変化）</button>
-      <div class="hint">配置・切り抜き・サイズ・装飾を一括変更</div>
+      <h2>② 写真パターン</h2>
+      <div class="chips" id="patternChips"></div>
+      <button onclick="shuffleDesign()" style="width:100%;margin-top:6px;">🎨 デザイン変更（押すたびに変化）</button>
+      <div class="hint">四角・円・大小の3パターン／AI顔検出で自動トリミング</div>
     </div>
 
     <div class="group">
@@ -332,7 +328,7 @@
         </div>
       </div>
 
-      <div class="photo-area layout-4a" id="photoArea"></div>
+      <div class="photo-area pat-square" data-count="4" id="photoArea"></div>
 
       <div class="comment-area" id="commentArea">
         ご利用中の様子をこちらに記載します。AIボタンで自動生成も可能です。
@@ -347,13 +343,11 @@
 
 <script>
 // ===== データ =====
-const layouts = {
-  3: ['layout-3a','layout-3b','layout-3c','layout-3d','layout-3e'],
-  4: ['layout-4a','layout-4b','layout-4c','layout-4d','layout-4e']
-};
-const photoStyles = ['style-rounded','style-shadow','style-frame','style-polaroid','style-doublef','style-tape','','style-arch'];
-const tiltVariants = ['', '', 'tilt-l', 'tilt-r', 'tilt-l2', 'tilt-r2'];
-const cropPositions = ['center center','center top','center bottom','left center','right center','25% 30%','75% 25%'];
+const patterns = [
+  { id: 'pat-square',   name: '□ 四角' },
+  { id: 'pat-circle',   name: '○ 円' },
+  { id: 'pat-contrast', name: '◧ 大小メリハリ' }
+];
 
 const themes = [
   { id: 'theme-spring', name: '🌸 春' },
@@ -366,7 +360,180 @@ const themes = [
   { id: 'theme-pop', name: '🎈 ポップ' }
 ];
 
-const telopStyles = ['tel-bubble','tel-ribbon','tel-sticky','tel-stamp','tel-highlight','tel-handwrite','tel-badge','tel-cloud'];
+const telopStyles = ['tel-sakura','tel-gold','tel-comic','tel-watercolor','tel-stamp','tel-note','tel-pop','tel-flower'];
+
+// ===== SVGイラスト生成（テロップ背景装飾） =====
+function svgDeco(style, season) {
+  const s = style;
+  if (s === 'tel-sakura') return `
+    <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="sakgrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ff8fb3"/>
+          <stop offset="1" stop-color="#d43e6f"/>
+        </linearGradient>
+        <filter id="sakshadow" x="-10%" y="-30%" width="120%" height="160%">
+          <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".25"/>
+        </filter>
+      </defs>
+      <g filter="url(#sakshadow)">
+        <path d="M 0,40 L 22,15 L 278,15 L 300,40 L 278,65 L 22,65 Z" fill="url(#sakgrad)"/>
+        <path d="M 22,15 L 0,40 L 22,65 L 30,40 Z" fill="#8a2148"/>
+        <path d="M 278,15 L 300,40 L 278,65 L 270,40 Z" fill="#8a2148"/>
+        <rect x="22" y="17" width="256" height="5" fill="rgba(255,255,255,.5)"/>
+      </g>
+      <g fill="#fff" opacity=".9">
+        <g transform="translate(35,22)"><circle r="3"/><circle cx="4" cy="4" r="1.5"/><circle cx="-4" cy="4" r="1.5"/></g>
+        <g transform="translate(265,58)"><circle r="3"/><circle cx="4" cy="-4" r="1.5"/><circle cx="-4" cy="-4" r="1.5"/></g>
+      </g>
+    </svg>`;
+
+  if (s === 'tel-gold') return `
+    <svg viewBox="0 0 300 80" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="ggrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fff3b0"/>
+          <stop offset=".45" stop-color="#e6b94a"/>
+          <stop offset=".55" stop-color="#c99530"/>
+          <stop offset="1" stop-color="#8a6516"/>
+        </linearGradient>
+        <filter id="gshadow"><feDropShadow dx="0" dy="3" stdDeviation="2" flood-opacity=".35"/></filter>
+      </defs>
+      <g filter="url(#gshadow)">
+        <rect x="4" y="8" width="292" height="64" rx="4" fill="url(#ggrad)"/>
+        <rect x="4" y="8" width="292" height="64" rx="4" fill="none" stroke="#8a6516" stroke-width="1.5"/>
+        <rect x="10" y="14" width="280" height="52" rx="2" fill="none" stroke="#fff5c4" stroke-width="1" opacity=".7"/>
+      </g>
+      <g fill="#5a3d00" opacity=".7">
+        <path d="M 16,18 Q 22,14 28,18 Q 22,22 16,18" />
+        <path d="M 284,62 Q 278,58 272,62 Q 278,66 284,62" />
+        <circle cx="22" cy="62" r="1.5"/><circle cx="278" cy="18" r="1.5"/>
+      </g>
+    </svg>`;
+
+  if (s === 'tel-comic') return `
+    <svg viewBox="0 0 300 100" preserveAspectRatio="none">
+      <defs>
+        <filter id="cshadow"><feDropShadow dx="2" dy="2" stdDeviation="0" flood-color="#000"/></filter>
+      </defs>
+      <g filter="url(#cshadow)">
+        <path d="M 150,6 L 168,14 L 200,10 L 215,18 L 245,14 L 260,24 L 285,28
+                 L 292,44 L 288,62 L 280,74 L 260,80 L 240,84 L 200,86 L 155,90
+                 L 140,98 L 135,86 L 100,84 L 70,80 L 40,78 L 22,72 L 10,58
+                 L 8,40 L 16,24 L 40,18 L 70,16 L 100,10 L 130,10 Z"
+              fill="#fff" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
+      </g>
+      <g fill="#fff" stroke="#111" stroke-width="2">
+        <circle cx="30" cy="30" r="3"/><circle cx="270" cy="70" r="3"/>
+      </g>
+    </svg>`;
+
+  if (s === 'tel-watercolor') {
+    const col = { spring:['#f8a5c2','#e85a8b'], summer:['#7fd3f0','#2089b8'],
+                  autumn:['#ffb066','#d96a1e'], winter:['#9fb6cb','#4a6a85'] }[season] || ['#7fd3f0','#2089b8'];
+    return `
+    <svg viewBox="0 0 300 90" preserveAspectRatio="none">
+      <defs>
+        <filter id="wfilter">
+          <feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="2" seed="3"/>
+          <feDisplacementMap in="SourceGraphic" scale="10"/>
+        </filter>
+        <linearGradient id="wgrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="${col[0]}"/>
+          <stop offset="1" stop-color="${col[1]}"/>
+        </linearGradient>
+      </defs>
+      <g filter="url(#wfilter)" opacity=".9">
+        <ellipse cx="150" cy="45" rx="140" ry="34" fill="url(#wgrad)"/>
+      </g>
+      <g opacity=".5" fill="${col[1]}">
+        <circle cx="30" cy="30" r="2"/><circle cx="45" cy="60" r="1.5"/>
+        <circle cx="265" cy="35" r="2"/><circle cx="275" cy="60" r="1.5"/>
+      </g>
+    </svg>`;
+  }
+
+  if (s === 'tel-stamp') return `
+    <svg viewBox="0 0 220 90" preserveAspectRatio="none">
+      <defs>
+        <filter id="stfilter">
+          <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2"/>
+          <feColorMatrix values="0 0 0 0 0.6, 0 0 0 0 0.1, 0 0 0 0 0.1, 0 0 0 .7 0"/>
+          <feComposite in="SourceGraphic" operator="in"/>
+        </filter>
+      </defs>
+      <g stroke="#9c1f1f" stroke-width="3" fill="none">
+        <rect x="8" y="8" width="204" height="74" rx="4"/>
+        <rect x="14" y="14" width="192" height="62" rx="2"/>
+      </g>
+      <g fill="#9c1f1f" opacity=".15" filter="url(#stfilter)">
+        <rect x="0" y="0" width="220" height="90"/>
+      </g>
+    </svg>`;
+
+  if (s === 'tel-note') return `
+    <svg viewBox="0 0 280 80" preserveAspectRatio="none">
+      <defs>
+        <filter id="roughn">
+          <feTurbulence baseFrequency=".02" numOctaves="2" seed="5"/>
+          <feDisplacementMap in="SourceGraphic" scale="3"/>
+        </filter>
+      </defs>
+      <g filter="url(#roughn)">
+        <rect x="6" y="6" width="268" height="68" rx="3" fill="#fffbec" stroke="#2c3e50" stroke-width="2"/>
+      </g>
+      <line x1="20" y1="68" x2="260" y2="68" stroke="#2c3e50" stroke-width="1" opacity=".3" stroke-dasharray="2 3"/>
+    </svg>`;
+
+  if (s === 'tel-pop') {
+    const colors = ['#ff6b9d','#4ecdc4','#ffd93d','#ff8c42','#a78bfa','#6bcf7f'];
+    const c = colors[Math.floor(Math.random()*colors.length)];
+    return `
+    <svg viewBox="0 0 280 90" preserveAspectRatio="none">
+      <defs>
+        <filter id="pshadow"><feDropShadow dx="3" dy="4" stdDeviation="0" flood-opacity=".25"/></filter>
+      </defs>
+      <g filter="url(#pshadow)">
+        <rect x="6" y="10" width="268" height="70" rx="18" fill="${c}" stroke="#fff" stroke-width="4"/>
+      </g>
+      <g fill="#fff" opacity=".9">
+        <path d="M 24,28 L 28,20 L 30,28 L 38,30 L 30,32 L 28,40 L 24,32 L 16,30 Z"/>
+        <path d="M 252,62 L 256,54 L 258,62 L 266,64 L 258,66 L 256,74 L 252,66 L 244,64 Z"/>
+      </g>
+    </svg>`;
+  }
+
+  if (s === 'tel-flower') {
+    const flower = { spring:'#f8a5c2', summer:'#f9d856', autumn:'#e07b2a', winter:'#b8c9d6' }[season] || '#f8a5c2';
+    const leaf = { spring:'#7bc47f', summer:'#4a9f5d', autumn:'#c55a2a', winter:'#8fa8b8' }[season] || '#7bc47f';
+    return `
+    <svg viewBox="0 0 300 90" preserveAspectRatio="none">
+      <defs>
+        <filter id="fshadow"><feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity=".2"/></filter>
+      </defs>
+      <g filter="url(#fshadow)">
+        <rect x="20" y="18" width="260" height="54" rx="27" fill="#fffcf5" stroke="${leaf}" stroke-width="2"/>
+      </g>
+      <g transform="translate(28,45)">
+        <g fill="${flower}">
+          <ellipse cx="0" cy="-7" rx="4" ry="6"/><ellipse cx="7" cy="0" rx="6" ry="4"/>
+          <ellipse cx="0" cy="7" rx="4" ry="6"/><ellipse cx="-7" cy="0" rx="6" ry="4"/>
+        </g>
+        <circle r="3" fill="#f9d856"/>
+      </g>
+      <g transform="translate(272,45)">
+        <g fill="${flower}">
+          <ellipse cx="0" cy="-7" rx="4" ry="6"/><ellipse cx="7" cy="0" rx="6" ry="4"/>
+          <ellipse cx="0" cy="7" rx="4" ry="6"/><ellipse cx="-7" cy="0" rx="6" ry="4"/>
+        </g>
+        <circle r="3" fill="#f9d856"/>
+      </g>
+      <path d="M 42,58 Q 48,52 56,58" stroke="${leaf}" stroke-width="1.5" fill="none"/>
+      <path d="M 244,32 Q 252,26 258,32" stroke="${leaf}" stroke-width="1.5" fill="none"/>
+    </svg>`;
+  }
+  return '';
+}
 
 const skins = ['', 'skin-dots', 'skin-grid', 'skin-diag', 'skin-wave', 'skin-corners', 'skin-stripes', 'skin-confetti'];
 const titleVars = ['titlevar-1','titlevar-2','titlevar-3','titlevar-4','titlevar-5'];
@@ -461,16 +628,69 @@ function generateAIComment() {
 
 // ===== 状態 =====
 let state = {
-  photos: [],
-  layout: 'layout-4a',
+  photos: [],       // dataURL
+  pattern: 'pat-square',
   theme: 'theme-spring',
   skin: '',
   titleVar: 'titlevar-1',
   commVar: '',
-  cellStyles: [],   // 各写真のスタイル
-  cellTilts: [],    // 各写真の傾き
-  cellCrops: []     // 各写真の切り抜き位置
+  cellCrops: []     // 顔検出結果 "x% y%"
 };
+
+// ===== 顔検出（face-api.js tiny model） =====
+let faceApiReady = false;
+let faceApiLoading = null;
+async function ensureFaceApi() {
+  if (faceApiReady) return true;
+  if (faceApiLoading) return faceApiLoading;
+  faceApiLoading = (async () => {
+    try {
+      if (typeof faceapi === 'undefined') {
+        // script defer でまだ読込中の場合
+        await new Promise(r => setTimeout(r, 300));
+      }
+      const base = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.13/model';
+      await faceapi.nets.tinyFaceDetector.loadFromUri(base);
+      faceApiReady = true;
+      return true;
+    } catch (e) {
+      console.warn('face-api load failed:', e);
+      return false;
+    }
+  })();
+  return faceApiLoading;
+}
+
+async function detectCrop(dataUrl) {
+  try {
+    const ok = await ensureFaceApi();
+    if (!ok) return 'center center';
+    const img = await new Promise((res, rej) => {
+      const i = new Image();
+      i.onload = () => res(i);
+      i.onerror = rej;
+      i.src = dataUrl;
+    });
+    const dets = await faceapi.detectAllFaces(img,
+      new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.4 }));
+    if (!dets || dets.length === 0) return 'center center';
+    // 全顔の重心
+    let minX = Infinity, minY = Infinity, maxX = 0, maxY = 0;
+    dets.forEach(d => {
+      const b = d.box;
+      minX = Math.min(minX, b.x); minY = Math.min(minY, b.y);
+      maxX = Math.max(maxX, b.x + b.width); maxY = Math.max(maxY, b.y + b.height);
+    });
+    const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+    // 画像内の%に変換（0〜100でクランプ）
+    const px = Math.max(0, Math.min(100, (cx / img.width) * 100));
+    const py = Math.max(0, Math.min(100, (cy / img.height) * 100));
+    return `${px.toFixed(1)}% ${py.toFixed(1)}%`;
+  } catch (e) {
+    console.warn('detectCrop error:', e);
+    return 'center center';
+  }
+}
 
 // ===== 初期化 =====
 function init() {
@@ -493,10 +713,22 @@ function init() {
   applyAll();
   bindEvents();
   updateMeta();
+
+  // face-api のモデルをバックグラウンド先読み
+  ensureFaceApi();
 }
 
-// ===== チップ生成（テーマのみ） =====
+// ===== チップ生成 =====
 function buildChips() {
+  const pc = document.getElementById('patternChips');
+  pc.innerHTML = '';
+  patterns.forEach(p => {
+    const c = document.createElement('div');
+    c.className = 'chip' + (state.pattern === p.id ? ' active' : '');
+    c.textContent = p.name;
+    c.onclick = () => { state.pattern = p.id; applyAll(); buildChips(); };
+    pc.appendChild(c);
+  });
   const tc = document.getElementById('themeChips');
   tc.innerHTML = '';
   themes.forEach(t => {
@@ -511,60 +743,39 @@ function buildChips() {
 // ===== 全装飾を適用 =====
 function applyAll() {
   const page = document.getElementById('page');
-  // テーマ
   themes.forEach(t => page.classList.remove(t.id));
   page.classList.add(state.theme);
-  // スキン
   skins.filter(Boolean).forEach(s => page.classList.remove(s));
   if (state.skin) page.classList.add(state.skin);
-  // タイトル装飾
   const title = page.querySelector('.title-area');
   titleVars.forEach(v => title.classList.remove(v));
   title.classList.add(state.titleVar);
-  // コメント装飾
   const comm = document.getElementById('commentArea');
   commVars.filter(Boolean).forEach(v => comm.classList.remove(v));
   if (state.commVar) comm.classList.add(state.commVar);
-  // レイアウト
   const area = document.getElementById('photoArea');
-  Object.values(layouts).flat().forEach(l => area.classList.remove(l));
-  area.classList.add(state.layout);
+  patterns.forEach(p => area.classList.remove(p.id));
+  area.classList.add(state.pattern);
+  area.dataset.count = state.photos.length || 4;
 }
 
-// ===== デザイン全変更（押すたびに） =====
-let shuffleCount = 0;
+// ===== デザイン全変更 =====
 function shuffleDesign() {
-  shuffleCount++;
-  const count = state.photos.length || 4;
-  const layoutList = layouts[count] || layouts[4];
-  // 直前と違うレイアウトを選ぶ
-  let newLayout;
-  do { newLayout = pick(layoutList); }
-  while (newLayout === state.layout && layoutList.length > 1);
-  state.layout = newLayout;
+  // パターンを順次切替
+  const pList = patterns.map(p => p.id);
+  let np;
+  do { np = pick(pList); } while (np === state.pattern && pList.length > 1);
+  state.pattern = np;
 
-  // テーマも変更
-  let newTheme;
-  do { newTheme = pick(themes).id; } while (newTheme === state.theme && themes.length > 1);
-  state.theme = newTheme;
+  let nt;
+  do { nt = pick(themes).id; } while (nt === state.theme && themes.length > 1);
+  state.theme = nt;
 
-  // 背景スキン・タイトル・コメント装飾をランダム化
   state.skin = pick(skins);
   state.titleVar = pick(titleVars);
   state.commVar = pick(commVars);
 
-  // 各写真にスタイル・傾き・切り抜きをランダム割当
-  state.cellStyles = [];
-  state.cellTilts = [];
-  state.cellCrops = [];
-  for (let i = 0; i < count; i++) {
-    state.cellStyles.push(pick(photoStyles));
-    state.cellTilts.push(pick(tiltVariants));
-    state.cellCrops.push(pick(cropPositions));
-  }
-
   buildChips();
-  renderPhotos();
   applyAll();
 }
 
@@ -584,10 +795,8 @@ function renderPhotos() {
   } else {
     state.photos.forEach((src, i) => {
       const cell = document.createElement('div');
-      const style = state.cellStyles[i] || '';
-      const tilt = state.cellTilts[i] || '';
       const crop = state.cellCrops[i] || 'center center';
-      cell.className = 'photo-cell ' + style + ' ' + tilt;
+      cell.className = 'photo-cell';
       cell.innerHTML = `<img src="${src}" alt="photo${i}" style="object-position:${crop}">`;
       cell.onclick = () => swapPhoto(i);
       area.appendChild(cell);
@@ -612,51 +821,58 @@ function swapPhoto(i) {
 }
 
 // ===== 写真選択 =====
-document.getElementById('photoInput').addEventListener('change', (e) => {
+document.getElementById('photoInput').addEventListener('change', async (e) => {
   const files = Array.from(e.target.files).slice(0, 4);
-  state.photos = [];
-  let loaded = 0;
-  files.forEach((f, i) => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      state.photos[i] = ev.target.result;
-      loaded++;
-      if (loaded === files.length) {
-        if (state.photos.length === 3 && !state.layout.startsWith('layout-3')) state.layout = 'layout-3a';
-        if (state.photos.length === 4 && !state.layout.startsWith('layout-4')) state.layout = 'layout-4a';
-        // 写真ごとの初期スタイルを用意
-        state.cellStyles = state.photos.map(() => '');
-        state.cellTilts = state.photos.map(() => '');
-        state.cellCrops = state.photos.map(() => 'center center');
-        renderPhotos();
-      }
-    };
-    reader.readAsDataURL(f);
-  });
+  if (files.length === 0) return;
+  // まず読込
+  const reads = files.map(f => new Promise(res => {
+    const r = new FileReader();
+    r.onload = ev => res(ev.target.result);
+    r.readAsDataURL(f);
+  }));
+  state.photos = await Promise.all(reads);
+  state.cellCrops = state.photos.map(() => 'center center');
+
+  // 即座に表示（中央クロップ）
+  renderPhotos();
+
+  // 顔検出ステータス表示
+  const hint = document.querySelector('.file-label').nextElementSibling;
+  const original = hint.textContent;
+  hint.textContent = '🤖 AIで顔位置を検出中...';
+
+  // 顔検出（順次・並列）
+  const crops = await Promise.all(state.photos.map(detectCrop));
+  state.cellCrops = crops;
+  hint.textContent = '✓ 顔位置を検出して切り抜き調整しました';
+  setTimeout(() => hint.textContent = original, 4000);
+  renderPhotos();
 });
 
-// ===== テロップ =====
+// ===== テロップ（SVGイラスト合成） =====
 let lastTelopStyle = '';
 function addTelop() {
   const userText = document.getElementById('telopText').value.trim();
   const text = userText || aiTelopText();
-  // 直前と違うスタイルを選ぶ
   let style;
   do { style = pick(telopStyles); } while (style === lastTelopStyle && telopStyles.length > 1);
   lastTelopStyle = style;
   const area = document.getElementById('photoArea');
+  const season = getSeason();
   const el = document.createElement('div');
   el.className = 'telop ' + style;
-  el.innerHTML = (style === 'tel-ribbon' ? `<span>${escapeHtml(text)}</span>` : escapeHtml(text))
-    + '<button class="del" onclick="this.parentElement.remove()">×</button>';
-  // ランダム回転（手書き・付箋・スタンプ以外）
-  if (!['tel-sticky','tel-stamp','tel-ribbon'].includes(style)) {
-    const rot = (Math.random() * 8 - 4).toFixed(1);
+  el.innerHTML = `
+    <div class="deco">${svgDeco(style, season)}</div>
+    <span class="txt">${escapeHtml(text)}</span>
+    <button class="del" onclick="this.parentElement.remove()">×</button>`;
+  // スタンプは既定で回転済み。その他は微小ランダム回転
+  if (!['tel-stamp'].includes(style)) {
+    const rot = (Math.random() * 6 - 3).toFixed(1);
     el.style.transform = `rotate(${rot}deg)`;
   }
   const rect = area.getBoundingClientRect();
-  el.style.left = (20 + Math.random() * Math.max(60, rect.width - 220)) + 'px';
-  el.style.top  = (20 + Math.random() * Math.max(60, rect.height - 80)) + 'px';
+  el.style.left = (20 + Math.random() * Math.max(60, rect.width - 260)) + 'px';
+  el.style.top  = (20 + Math.random() * Math.max(60, rect.height - 100)) + 'px';
   makeDraggable(el);
   area.appendChild(el);
   document.getElementById('telopText').value = '';
