@@ -77,6 +77,82 @@
   .layout-4c { grid-template-columns: 1fr 2fr 1fr; grid-template-rows: 1fr 1fr; }
   .layout-4c .photo-cell:nth-child(2) { grid-row: span 2; }
 
+  /* ===== 背景スキン（テーマに重ねる装飾） ===== */
+  .skin-dots { background-image: radial-gradient(rgba(0,0,0,.06) 1.5px, transparent 1.5px); background-size: 14px 14px; }
+  .skin-grid { background-image: linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px); background-size: 20px 20px; }
+  .skin-diag { background-image: repeating-linear-gradient(45deg, rgba(0,0,0,.025) 0 8px, transparent 8px 16px); }
+  .skin-wave::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 35mm;
+    background: radial-gradient(ellipse at top, transparent 60%, rgba(0,0,0,.04) 100%);
+    pointer-events: none; z-index: 0;
+  }
+  .skin-corners::before, .skin-corners::after {
+    content: ''; position: absolute; width: 60mm; height: 60mm; pointer-events: none; z-index: 0;
+  }
+  .skin-corners::before { top: 0; left: 0; background: radial-gradient(circle at top left, currentColor, transparent 70%); opacity: .12; }
+  .skin-corners::after { bottom: 0; right: 0; background: radial-gradient(circle at bottom right, currentColor, transparent 70%); opacity: .12; }
+  .skin-stripes { background-image: repeating-linear-gradient(0deg, transparent 0 30px, rgba(0,0,0,.03) 30px 32px); }
+  .skin-confetti::before {
+    content: '✿ ❀ ✦ ❁ ✿ ❀'; position: absolute; top: 4mm; left: 4mm; right: 30mm;
+    font-size: 14px; opacity: .15; letter-spacing: 18px; pointer-events: none;
+  }
+
+  .page > .header, .page > .photo-area, .page > .comment-area, .page > .footer { position: relative; z-index: 1; }
+
+  /* タイトル装飾バリエーション */
+  .titlevar-1 .main-title { letter-spacing: 0; }
+  .titlevar-2 .main-title { letter-spacing: 4px; font-weight: 900; }
+  .titlevar-3 .main-title::before { content: '― '; opacity: .6; }
+  .titlevar-3 .main-title::after { content: ' ―'; opacity: .6; }
+  .titlevar-4 .main-title { font-style: italic; }
+  .titlevar-5 .main-title { text-shadow: 2px 2px 0 rgba(0,0,0,.08); }
+
+  /* コメントエリア装飾バリエーション */
+  .commvar-rounded { border-radius: 18px !important; }
+  .commvar-tag { border-radius: 0 18px 18px 0 !important; }
+  .commvar-quote::before { content: '“'; font-size: 30px; opacity: .4; margin-right: 6px; vertical-align: -10px; }
+  .commvar-double { border: 2px double currentColor !important; border-left-width: 5px !important; }
+
+  /* ===== 写真スタイルバリエーション ===== */
+  .photo-cell.style-rounded { border-radius: 14px; }
+  .photo-cell.style-circle { border-radius: 50%; }
+  .photo-cell.style-polaroid {
+    background: #fff; padding: 6px 6px 24px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.18);
+    border-radius: 2px;
+  }
+  .photo-cell.style-polaroid img { border-radius: 0; }
+  .photo-cell.style-shadow { box-shadow: 0 4px 14px rgba(0,0,0,.22); border-radius: 6px; }
+  .photo-cell.style-frame { border: 6px solid #fff; box-shadow: 0 0 0 1px #ccc, 0 4px 10px rgba(0,0,0,.15); border-radius: 4px; }
+  .photo-cell.style-doublef { border: 3px double #555; border-radius: 4px; padding: 2px; background: #fff; }
+  .photo-cell.style-tape { border-radius: 2px; box-shadow: 0 2px 6px rgba(0,0,0,.2); }
+  .photo-cell.style-tape::before {
+    content: ''; position: absolute; top: -8px; left: 30%; width: 50px; height: 18px;
+    background: rgba(255,235,150,.7); transform: rotate(-4deg); z-index: 2;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+  }
+  .photo-cell.style-arch { border-radius: 50% 50% 6px 6px / 30% 30% 6px 6px; }
+
+  .photo-cell.tilt-l { transform: rotate(-2deg); }
+  .photo-cell.tilt-r { transform: rotate(2deg); }
+  .photo-cell.tilt-l2 { transform: rotate(-3.5deg); }
+  .photo-cell.tilt-r2 { transform: rotate(3deg); }
+
+  /* レイアウト追加: 4枚 オフセット */
+  .layout-4d { grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .layout-4d .photo-cell:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+  .layout-4d .photo-cell:nth-child(2) { grid-column: span 2; }
+  .layout-4d .photo-cell:nth-child(3) { grid-column: span 1; }
+  .layout-4d .photo-cell:nth-child(4) { grid-column: span 1; }
+
+  .layout-4e { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1.4fr 1fr; }
+  .layout-4e .photo-cell:nth-child(2) { grid-column: span 2; }
+
+  /* レイアウト追加: 3枚 ストリップ */
+  .layout-3d { grid-template-columns: 1fr; grid-template-rows: 1.6fr 1fr 1fr; }
+  .layout-3e { grid-template-columns: 1fr 1.4fr; grid-template-rows: 1fr 1fr; }
+  .layout-3e .photo-cell:nth-child(2) { grid-row: span 2; }
+
   /* ===== テロップ ===== */
   .telop {
     position: absolute; padding: 6px 14px; font-size: 13px; font-weight: bold;
@@ -203,51 +279,38 @@
     </div>
 
     <div class="group">
-      <h2>② 写真レイアウト</h2>
-      <div class="chips" id="layoutChips"></div>
+      <h2>② 写真デザイン</h2>
+      <button onclick="shuffleDesign()" style="width:100%;">🎨 デザイン変更（押すたびに変化）</button>
+      <div class="hint">配置・切り抜き・サイズ・装飾を一括変更</div>
     </div>
 
     <div class="group">
-      <h2>③ デザインテーマ</h2>
+      <h2>③ カラーテーマ</h2>
       <div class="chips" id="themeChips"></div>
     </div>
 
     <div class="group">
       <h2>④ テロップ追加</h2>
-      <input type="text" id="telopText" placeholder="テロップ文字（例: 笑顔いっぱい！）">
+      <input type="text" id="telopText" placeholder="自由入力（空欄ならAIが提案）">
       <div style="margin-top:6px;">
-        <button onclick="addTelop()">✨ ランダムで追加</button>
-        <button class="sub" onclick="clearTelops()">クリア</button>
+        <button onclick="addTelop()" style="width:100%;">✨ AIテロップを追加（毎回違うパターン）</button>
+        <button class="sub" onclick="clearTelops()" style="width:100%;margin-top:4px;">すべてクリア</button>
       </div>
-      <div class="hint">追加後、テロップをドラッグで移動可能</div>
+      <div class="hint">押すごとに文言・装飾・配置が変化／ドラッグで移動</div>
     </div>
 
     <div class="group">
       <h2>⑤ コメント</h2>
       <textarea id="commentText" placeholder="2〜3行のコメントを入力"></textarea>
-      <div style="margin-top:6px;">
-        <label>シーン</label>
-        <select id="aiScene" style="width:100%;padding:4px;font-size:12px;">
-          <option value="general">通常の利用</option>
-          <option value="meal">食事・おやつ</option>
-          <option value="bath">入浴</option>
-          <option value="recreation">レクリエーション</option>
-          <option value="walk">散歩・外出</option>
-          <option value="craft">手芸・工作</option>
-          <option value="conversation">会話・交流</option>
-        </select>
-        <button onclick="generateAI()" style="margin-top:6px;width:100%;">🤖 AIでコメント生成</button>
-      </div>
+      <button onclick="generateAI()" style="margin-top:6px;width:100%;">🤖 AIでコメント生成</button>
     </div>
 
     <div class="group">
-      <h2>⑥ 基本情報</h2>
+      <h2>⑥ 利用日</h2>
       <label>利用開始日</label>
       <input type="date" id="startDate">
       <label style="margin-top:4px;">利用終了日（単日の場合は空欄）</label>
       <input type="date" id="endDate">
-      <label style="margin-top:4px;">担当スタッフ</label>
-      <input type="text" id="staffName" placeholder="例: 山田">
     </div>
 
     <div class="group">
@@ -266,7 +329,6 @@
         </div>
         <div class="meta">
           <div>利用日: <span id="metaDate">　　　　</span></div>
-          <div>担当: <span id="metaStaff">　　　</span></div>
         </div>
       </div>
 
@@ -278,7 +340,6 @@
 
       <div class="footer">
         <span>元気の家ショートステイ</span>
-        <span>※プライバシー保護のためお名前は記載しておりません</span>
       </div>
     </div>
   </main>
@@ -287,17 +348,12 @@
 <script>
 // ===== データ =====
 const layouts = {
-  3: [
-    { id: 'layout-3a', name: '3枚｜大1+小2' },
-    { id: 'layout-3b', name: '3枚｜横並び' },
-    { id: 'layout-3c', name: '3枚｜上大+下2' }
-  ],
-  4: [
-    { id: 'layout-4a', name: '4枚｜2×2' },
-    { id: 'layout-4b', name: '4枚｜大1+小3' },
-    { id: 'layout-4c', name: '4枚｜中央大' }
-  ]
+  3: ['layout-3a','layout-3b','layout-3c','layout-3d','layout-3e'],
+  4: ['layout-4a','layout-4b','layout-4c','layout-4d','layout-4e']
 };
+const photoStyles = ['style-rounded','style-shadow','style-frame','style-polaroid','style-doublef','style-tape','','style-arch'];
+const tiltVariants = ['', '', 'tilt-l', 'tilt-r', 'tilt-l2', 'tilt-r2'];
+const cropPositions = ['center center','center top','center bottom','left center','right center','25% 30%','75% 25%'];
 
 const themes = [
   { id: 'theme-spring', name: '🌸 春' },
@@ -312,49 +368,108 @@ const themes = [
 
 const telopStyles = ['tel-bubble','tel-ribbon','tel-sticky','tel-stamp','tel-highlight','tel-handwrite','tel-badge','tel-cloud'];
 
-const telopSamples = ['いい笑顔！','楽しい時間','大好評！','ほっこり','元気いっぱい','癒しのひととき','素敵な瞬間','みんなで♪','心温まる','和やかに'];
+const skins = ['', 'skin-dots', 'skin-grid', 'skin-diag', 'skin-wave', 'skin-corners', 'skin-stripes', 'skin-confetti'];
+const titleVars = ['titlevar-1','titlevar-2','titlevar-3','titlevar-4','titlevar-5'];
+const commVars = ['', 'commvar-rounded', 'commvar-tag', 'commvar-quote', 'commvar-double'];
 
-// ===== AIコメントテンプレート =====
-const aiTemplates = {
-  general: [
-    ['本日も穏やかにお過ごしいただきました。', '他のご利用者様とも楽しそうに過ごされ、終始笑顔が見られました。', 'ゆったりとした時間を満喫されていました。'],
-    ['朝から表情も明るく、', '職員やご利用者様との会話を楽しまれていました。', 'リラックスした様子でお過ごしです。'],
-    ['ご利用中はとても穏やかに、', 'ご自身のペースでゆっくりと過ごされました。', '安心してお休みいただけたご様子です。']
+// ===== AIテロップ生成（文脈・季節・装飾を組合せ） =====
+function getSeason() {
+  const m = new Date(document.getElementById('startDate').value || Date.now()).getMonth() + 1;
+  if (m >= 3 && m <= 5) return 'spring';
+  if (m >= 6 && m <= 8) return 'summer';
+  if (m >= 9 && m <= 11) return 'autumn';
+  return 'winter';
+}
+
+const telopBank = {
+  // 感情系
+  emotion: ['いい笑顔','うれしいね','ほっこり♡','癒される～','しあわせ時間','ニッコリ','満面の笑み','心ぽかぽか','大満足','感動！'],
+  // 時間・場面系
+  scene: ['楽しいひととき','憩いの時間','和やかなティータイム','穏やかな午後','賑やかなお昼','静かな朝','安らぎの時間','団らん','おしゃべりタイム','まったり時間'],
+  // 食事系
+  meal: ['いただきま～す','美味しいね','完食です','おかわり！','絶品！','大好評','ごちそうさま','本日のメニュー','旬の味覚','手作りの味'],
+  // アクティビティ
+  activity: ['みんなで挑戦','真剣そのもの','大盛り上がり','上手にできました','見事な出来栄え','力作完成','チームワーク◎','楽しみ方いろいろ','名人芸'],
+  // 季節（春）
+  spring: ['桜咲く季節','春のおとずれ','花便り','春爛漫','うららかな日','新緑がまぶしい','ぽかぽか陽気','春の風'],
+  summer: ['夏を満喫','涼やかに','風鈴の音','夏の思い出','緑あふれる','うちわで一服','ひと夏の彩り','夏祭り気分'],
+  autumn: ['秋を感じて','紅葉狩り','実りの秋','秋深し','ふかふかの落ち葉','読書の秋','食欲の秋','紅葉と共に'],
+  winter: ['冬のぬくもり','こたつ日和','雪化粧','あったか時間','湯気ほっこり','冬支度','ぽかぽかひとやすみ','寒さに負けず']
+};
+
+const telopFormats = [
+  s => s,
+  s => `${s}！`,
+  s => `${s}♪`,
+  s => `${s}☆`,
+  s => `「${s}」`,
+  s => `― ${s} ―`,
+  s => `✦ ${s} ✦`,
+  s => `${s}…♡`,
+  s => `〜 ${s} 〜`,
+  s => `#${s}`,
+  s => `★${s}★`
+];
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function aiTelopText() {
+  const season = getSeason();
+  // カテゴリを重み付きで選択
+  const categories = ['emotion','emotion','scene','scene','activity','meal',season,season];
+  const cat = pick(categories);
+  const base = pick(telopBank[cat]);
+  const fmt = pick(telopFormats);
+  return fmt(base);
+}
+
+// ===== AIコメント生成 =====
+const commentParts = {
+  open: ['ご利用中は','本日は','滞在中は','お預かり中は','日中は','今回のご利用では'],
+  mood: ['とても穏やかに','終始にこやかに','リラックスされたご様子で','活き活きとした表情で','和やかな雰囲気の中で','ご自身のペースで'],
+  activity: [
+    '他のご利用者様との会話を楽しまれ',
+    'レクリエーションにも積極的に参加され',
+    '食事やおやつの時間を楽しみにされ',
+    'お茶を飲みながら談笑され',
+    '職員との会話に花を咲かせ',
+    '季節を感じる催しに参加され',
+    '体操や歌に合わせて楽しまれ',
+    '手作業にじっくりと取り組まれ'
   ],
-  meal: [
-    ['食事の時間はとても楽しみにされており、', '「美味しいね」と笑顔でお召し上がりになりました。', '完食され、満足されたご様子でした。'],
-    ['本日のお食事も大変好評で、', '会話を楽しみながら美味しそうに召し上がっていました。', 'おやつの時間も楽しまれました。'],
-    ['食欲も旺盛で、', '一口ごとに「おいしい」と感想をいただきました。', '職員も嬉しい時間となりました。']
+  detail: [
+    '笑顔が多く見られました。',
+    '穏やかな時間をお過ごしいただきました。',
+    '充実したご様子でした。',
+    '心地よいひとときとなったようです。',
+    'リラックスして過ごされていました。',
+    '楽しまれているご様子が印象的でした。'
   ],
-  bath: [
-    ['入浴では「気持ちいいね」と、', 'リラックスした表情を見せてくださいました。', '湯上がりも肌つやよく、すっきりされたご様子です。'],
-    ['ゆったりと入浴を楽しまれ、', '「あったまったわ」と満足げな笑顔。', '安心してお過ごしいただけました。']
-  ],
-  recreation: [
-    ['本日のレクリエーションでは、', '皆さまと一緒に大いに盛り上がりました。', '笑い声が絶えない楽しい時間となりました。'],
-    ['ゲームに参加され、', '集中して取り組まれる姿が印象的でした。', '達成感のある表情を見せてくださいました。'],
-    ['歌や体操に積極的に参加され、', '懐かしい歌に合わせて口ずさまれていました。', 'とても活気のある時間となりました。']
-  ],
-  walk: [
-    ['天気も良く、', '外の空気を吸いながらゆっくりとお散歩を楽しまれました。', '季節を感じられる穏やかなひとときでした。'],
-    ['お散歩では景色を眺めながら、', '「気持ちいいね」と何度も話されていました。', '良い気分転換になったようです。']
-  ],
-  craft: [
-    ['手作業に集中して取り組まれ、', '仕上がった作品を嬉しそうに眺めておられました。', '職員も完成度の高さに感心しました。'],
-    ['作品づくりでは丁寧に手を動かされ、', '完成すると満面の笑顔を見せてくださいました。', '充実した時間となりました。']
-  ],
-  conversation: [
-    ['他のご利用者様や職員と、', '昔話に花を咲かせ、楽しい時間を過ごされました。', '和やかな会話が続いていました。'],
-    ['お茶を飲みながらの会話を楽しまれ、', '笑顔で過ごされる時間が多く見られました。', 'とても穏やかな1日でした。']
+  close: [
+    'またのご利用を心よりお待ちしております。',
+    '引き続き安心してお過ごしいただけるよう努めてまいります。',
+    'ご家族の皆さまにもご安心いただける一日となりました。',
+    '次回もぜひ笑顔でお会いできることを楽しみにしております。',
+    'スタッフ一同、嬉しい時間となりました。'
   ]
 };
+function generateAIComment() {
+  return pick(commentParts.open) + pick(commentParts.mood)
+    + 'お過ごしいただきました。' + pick(commentParts.activity)
+    + '、' + pick(commentParts.detail) + pick(commentParts.close);
+}
 
 // ===== 状態 =====
 let state = {
   photos: [],
   layout: 'layout-4a',
   theme: 'theme-spring',
-  telops: []
+  skin: '',
+  titleVar: 'titlevar-1',
+  commVar: '',
+  cellStyles: [],   // 各写真のスタイル
+  cellTilts: [],    // 各写真の傾き
+  cellCrops: []     // 各写真の切り抜き位置
 };
 
 // ===== 初期化 =====
@@ -374,55 +489,88 @@ function init() {
   document.getElementById('startDate').value = iso;
 
   buildChips();
-  applyTheme();
   renderPhotos();
+  applyAll();
   bindEvents();
   updateMeta();
 }
 
-// ===== チップ生成 =====
+// ===== チップ生成（テーマのみ） =====
 function buildChips() {
-  const lc = document.getElementById('layoutChips');
-  lc.innerHTML = '';
-  const count = state.photos.length || 4;
-  const list = layouts[count] || layouts[4];
-  list.forEach(l => {
-    const c = document.createElement('div');
-    c.className = 'chip' + (state.layout === l.id ? ' active' : '');
-    c.textContent = l.name;
-    c.onclick = () => { state.layout = l.id; applyLayout(); buildChips(); };
-    lc.appendChild(c);
-  });
-
   const tc = document.getElementById('themeChips');
   tc.innerHTML = '';
   themes.forEach(t => {
     const c = document.createElement('div');
     c.className = 'chip' + (state.theme === t.id ? ' active' : '');
     c.textContent = t.name;
-    c.onclick = () => { state.theme = t.id; applyTheme(); buildChips(); };
+    c.onclick = () => { state.theme = t.id; applyAll(); buildChips(); };
     tc.appendChild(c);
   });
 }
 
-// ===== テーマ適用 =====
-function applyTheme() {
+// ===== 全装飾を適用 =====
+function applyAll() {
   const page = document.getElementById('page');
+  // テーマ
   themes.forEach(t => page.classList.remove(t.id));
   page.classList.add(state.theme);
+  // スキン
+  skins.filter(Boolean).forEach(s => page.classList.remove(s));
+  if (state.skin) page.classList.add(state.skin);
+  // タイトル装飾
+  const title = page.querySelector('.title-area');
+  titleVars.forEach(v => title.classList.remove(v));
+  title.classList.add(state.titleVar);
+  // コメント装飾
+  const comm = document.getElementById('commentArea');
+  commVars.filter(Boolean).forEach(v => comm.classList.remove(v));
+  if (state.commVar) comm.classList.add(state.commVar);
+  // レイアウト
+  const area = document.getElementById('photoArea');
+  Object.values(layouts).flat().forEach(l => area.classList.remove(l));
+  area.classList.add(state.layout);
 }
 
-// ===== レイアウト適用 =====
-function applyLayout() {
-  const area = document.getElementById('photoArea');
-  Object.values(layouts).flat().forEach(l => area.classList.remove(l.id));
-  area.classList.add(state.layout);
+// ===== デザイン全変更（押すたびに） =====
+let shuffleCount = 0;
+function shuffleDesign() {
+  shuffleCount++;
+  const count = state.photos.length || 4;
+  const layoutList = layouts[count] || layouts[4];
+  // 直前と違うレイアウトを選ぶ
+  let newLayout;
+  do { newLayout = pick(layoutList); }
+  while (newLayout === state.layout && layoutList.length > 1);
+  state.layout = newLayout;
+
+  // テーマも変更
+  let newTheme;
+  do { newTheme = pick(themes).id; } while (newTheme === state.theme && themes.length > 1);
+  state.theme = newTheme;
+
+  // 背景スキン・タイトル・コメント装飾をランダム化
+  state.skin = pick(skins);
+  state.titleVar = pick(titleVars);
+  state.commVar = pick(commVars);
+
+  // 各写真にスタイル・傾き・切り抜きをランダム割当
+  state.cellStyles = [];
+  state.cellTilts = [];
+  state.cellCrops = [];
+  for (let i = 0; i < count; i++) {
+    state.cellStyles.push(pick(photoStyles));
+    state.cellTilts.push(pick(tiltVariants));
+    state.cellCrops.push(pick(cropPositions));
+  }
+
+  buildChips();
+  renderPhotos();
+  applyAll();
 }
 
 // ===== 写真描画 =====
 function renderPhotos() {
   const area = document.getElementById('photoArea');
-  // テロップを退避
   const telopEls = Array.from(area.querySelectorAll('.telop'));
   area.innerHTML = '';
   const count = state.photos.length;
@@ -436,15 +584,17 @@ function renderPhotos() {
   } else {
     state.photos.forEach((src, i) => {
       const cell = document.createElement('div');
-      cell.className = 'photo-cell';
-      cell.innerHTML = `<img src="${src}" alt="photo${i}">`;
+      const style = state.cellStyles[i] || '';
+      const tilt = state.cellTilts[i] || '';
+      const crop = state.cellCrops[i] || 'center center';
+      cell.className = 'photo-cell ' + style + ' ' + tilt;
+      cell.innerHTML = `<img src="${src}" alt="photo${i}" style="object-position:${crop}">`;
       cell.onclick = () => swapPhoto(i);
       area.appendChild(cell);
     });
   }
-  // テロップを戻す
   telopEls.forEach(el => area.appendChild(el));
-  applyLayout();
+  applyAll();
 }
 
 let swapFirst = null;
@@ -472,10 +622,12 @@ document.getElementById('photoInput').addEventListener('change', (e) => {
       state.photos[i] = ev.target.result;
       loaded++;
       if (loaded === files.length) {
-        // 枚数に応じてレイアウト調整
         if (state.photos.length === 3 && !state.layout.startsWith('layout-3')) state.layout = 'layout-3a';
         if (state.photos.length === 4 && !state.layout.startsWith('layout-4')) state.layout = 'layout-4a';
-        buildChips();
+        // 写真ごとの初期スタイルを用意
+        state.cellStyles = state.photos.map(() => '');
+        state.cellTilts = state.photos.map(() => '');
+        state.cellCrops = state.photos.map(() => 'center center');
         renderPhotos();
       }
     };
@@ -484,19 +636,27 @@ document.getElementById('photoInput').addEventListener('change', (e) => {
 });
 
 // ===== テロップ =====
+let lastTelopStyle = '';
 function addTelop() {
-  const text = document.getElementById('telopText').value.trim()
-    || telopSamples[Math.floor(Math.random() * telopSamples.length)];
-  const style = telopStyles[Math.floor(Math.random() * telopStyles.length)];
+  const userText = document.getElementById('telopText').value.trim();
+  const text = userText || aiTelopText();
+  // 直前と違うスタイルを選ぶ
+  let style;
+  do { style = pick(telopStyles); } while (style === lastTelopStyle && telopStyles.length > 1);
+  lastTelopStyle = style;
   const area = document.getElementById('photoArea');
   const el = document.createElement('div');
   el.className = 'telop ' + style;
   el.innerHTML = (style === 'tel-ribbon' ? `<span>${escapeHtml(text)}</span>` : escapeHtml(text))
     + '<button class="del" onclick="this.parentElement.remove()">×</button>';
-  // ランダム位置
+  // ランダム回転（手書き・付箋・スタンプ以外）
+  if (!['tel-sticky','tel-stamp','tel-ribbon'].includes(style)) {
+    const rot = (Math.random() * 8 - 4).toFixed(1);
+    el.style.transform = `rotate(${rot}deg)`;
+  }
   const rect = area.getBoundingClientRect();
-  el.style.left = (20 + Math.random() * (rect.width - 200)) + 'px';
-  el.style.top  = (20 + Math.random() * (rect.height - 80)) + 'px';
+  el.style.left = (20 + Math.random() * Math.max(60, rect.width - 220)) + 'px';
+  el.style.top  = (20 + Math.random() * Math.max(60, rect.height - 80)) + 'px';
   makeDraggable(el);
   area.appendChild(el);
   document.getElementById('telopText').value = '';
@@ -525,11 +685,7 @@ function makeDraggable(el) {
 
 // ===== AIコメント生成 =====
 function generateAI() {
-  const scene = document.getElementById('aiScene').value;
-  const candidates = aiTemplates[scene] || aiTemplates.general;
-  // ランダムで一文ずつ別パターンから選んで自然に組み立て
-  const pick = candidates[Math.floor(Math.random() * candidates.length)];
-  const text = pick.join('');
+  const text = generateAIComment();
   document.getElementById('commentText').value = text;
   document.getElementById('commentArea').textContent = text;
 }
@@ -541,7 +697,6 @@ function bindEvents() {
   });
   document.getElementById('startDate').addEventListener('input', updateMeta);
   document.getElementById('endDate').addEventListener('input', updateMeta);
-  document.getElementById('staffName').addEventListener('input', updateMeta);
 }
 
 function formatDateRange(startStr, endStr) {
@@ -561,8 +716,6 @@ function updateMeta() {
   document.getElementById('metaDate').textContent =
     formatDateRange(document.getElementById('startDate').value,
                     document.getElementById('endDate').value);
-  document.getElementById('metaStaff').textContent =
-    document.getElementById('staffName').value || '　　　';
 }
 
 function escapeHtml(s) {
